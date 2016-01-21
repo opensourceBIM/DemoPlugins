@@ -22,7 +22,7 @@ public class AnonymizerService extends AbstractModifyRevisionService {
 	private static final String ANONYMIZED = "[ANONYMIZED]";
 
 	public AnonymizerService() {
-		super("AnonymizerService", "Anonymizes your model");
+		super("AnonymizerService");
 	}
 
 	@Override

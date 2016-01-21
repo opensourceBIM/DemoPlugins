@@ -11,7 +11,7 @@ public class HtmlService extends AbstractAddExtendedDataService {
 	private static final String NAMESPACE = "htmldemo";
 
 	public HtmlService() {
-		super("HTML Demo Service", "HTML Demo Service", NAMESPACE);
+		super("HTML Demo Service", NAMESPACE);
 	}
 
 	@Override

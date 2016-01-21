@@ -15,7 +15,7 @@ import org.bimserver.plugins.services.BimServerClientInterface;
 public class GuidFixerService extends AbstractModifyRevisionService {
 
 	public GuidFixerService() {
-		super("GUID fixer", "GUID fixer");
+		super("GUID fixer");
 	}
 
 	@Override

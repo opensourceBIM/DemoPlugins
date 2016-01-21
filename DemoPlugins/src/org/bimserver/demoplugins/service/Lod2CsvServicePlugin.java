@@ -34,7 +34,7 @@ public class Lod2CsvServicePlugin extends AbstractAddExtendedDataService {
 	private static final String NAMESPACE = "http://bimserver.org/lodcsv";
 	
 	public Lod2CsvServicePlugin() {
-		super("LOD to CSV", "LOD to CSV", NAMESPACE);
+		super("LOD to CSV", NAMESPACE);
 	}
 
 	@Override

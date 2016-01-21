@@ -19,7 +19,7 @@ public class EventLogService extends AbstractAddExtendedDataService {
 	private static final String NAMESPACE = "http://bimserver.org/eventlog";
 
 	public EventLogService() {
-		super("EventLog", "EventLog", NAMESPACE);
+		super("EventLog", NAMESPACE);
 	}
 	
 	@Override

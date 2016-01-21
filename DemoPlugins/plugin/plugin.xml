@@ -3,61 +3,85 @@
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.GuidFixerService</implementationClass>
+		<description>Service that fixes double GUIDS by generating new ones</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.AnonymizerService</implementationClass>
+		<description>Service that anonymises a model by removing user-related info</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.FurniturePlacerServicePlugin</implementationClass>
+		<description>Service which places random furniture in a model</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.CloneService</implementationClass>
+		<description>Service that will just store all models sent to it locally</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.Lod2ExcelServicePlugin</implementationClass>
+		<description>Service that generates an excel document with LOD information</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.Lod2CsvServicePlugin</implementationClass>
+		<description>Service that generates a CSV file with LOD information</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.GeometryMatcher</implementationClass>
+		<description>Services that matches geometry</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.modelchecker.ModelCheckerPlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.modelcheckers.LcieModelCheckerPlugin</implementationClass>
+		<description>Lcie model checker</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.HtmlService</implementationClass>
+		<description>Html Demo Service</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.EventLogService</implementationClass>
+		<description>EventLog Service</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.planner.PlanningConsultServiceHtml</implementationClass>
+		<description>Planning Consult Service HTML</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 	<PluginImplementation>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.planner.PlanningConsultServiceVisualization</implementationClass>
+		<description>Planning consult service visualization</description>
+		<enabled>true</enabled>
+	</PluginImplementation>
+		<PluginImplementation>
+		<interfaceClass>org.bimserver.plugins.serializers.SerializerPlugin</interfaceClass>
+		<implementationClass>org.bimserver.serializers.objectinfo.ObjectInfoSerializerPlugin</implementationClass>
+		<description>ObjectInfo serializer</description>
+		<enabled>true</enabled>
+	</PluginImplementation>
+	<PluginImplementation>
+		<interfaceClass>org.bimserver.plugins.serializers.SerializerPlugin</interfaceClass>
+		<implementationClass>org.bimserver.serializers.objectcsv.ObjectCSVSerializerPlugin</implementationClass>
+		<description>ObjectCSV serializer</description>
 		<enabled>true</enabled>
 	</PluginImplementation>
 </PluginDescriptor>

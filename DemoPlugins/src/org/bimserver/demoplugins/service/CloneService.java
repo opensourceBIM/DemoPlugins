@@ -43,27 +43,15 @@ import org.slf4j.LoggerFactory;
 public class CloneService extends ServicePlugin {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CloneService.class);
-	private boolean initialized;
 
 	@Override
 	public void init(PluginManagerInterface pluginManager) throws PluginException {
 		super.init(pluginManager);
-		initialized = true;
-	}
-
-	@Override
-	public String getDescription() {
-		return "Service that will just store all models sent to it locally";
 	}
 
 	@Override
 	public String getDefaultName() {
 		return "Clone Service";
-	}
-
-	@Override
-	public String getVersion() {
-		return "0.1";
 	}
 
 	@Override
@@ -86,11 +74,6 @@ public class CloneService extends ServicePlugin {
 		objectDefinition.getParameters().add(projectNameParameter);
 		
 		return objectDefinition;
-	}
-
-	@Override
-	public boolean isInitialized() {
-		return initialized;
 	}
 
 	@Override

@@ -9,16 +9,8 @@ import org.bimserver.shared.exceptions.PluginException;
 
 public class LcieModelCheckerPlugin implements ModelCheckerPlugin {
 
-	private boolean initialized;
-
 	@Override
 	public void init(PluginManagerInterface pluginManager) throws PluginException {
-		initialized = true;
-	}
-
-	@Override
-	public String getDescription() {
-		return "LCie Model Checker";
 	}
 
 	@Override
@@ -27,18 +19,8 @@ public class LcieModelCheckerPlugin implements ModelCheckerPlugin {
 	}
 
 	@Override
-	public String getVersion() {
-		return "0.1";
-	}
-
-	@Override
 	public ObjectDefinition getSettingsDefinition() {
 		return null;
-	}
-
-	@Override
-	public boolean isInitialized() {
-		return initialized;
 	}
 
 	@Override

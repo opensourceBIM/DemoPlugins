@@ -41,7 +41,7 @@ public class Lod2ExcelServicePlugin extends AbstractAddExtendedDataService {
 	private WritableCellFormat timesbold;
 
 	public Lod2ExcelServicePlugin() {
-		super("LOD to Excel", "LOD to Excel", NAMESPACE);
+		super("LOD to Excel", NAMESPACE);
 	}
 
 	@Override

@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractPlanningConsultService extends AbstractAddExtendedDataService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPlanningConsultService.class);
 	
-	public AbstractPlanningConsultService(String name, String description, String namespace) {
-		super(name, description, namespace);
+	public AbstractPlanningConsultService(String name, String namespace) {
+		super(name, namespace);
 	}
 
 	protected abstract void createExtendedData(Planner planner, IfcModelInterface model, BimServerClientInterface bimServerClientInterface, long roid);

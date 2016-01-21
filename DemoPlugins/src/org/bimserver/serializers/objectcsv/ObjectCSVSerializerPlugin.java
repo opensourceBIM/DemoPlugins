@@ -29,26 +29,8 @@ import org.bimserver.shared.exceptions.PluginException;
 
 public class ObjectCSVSerializerPlugin extends AbstractSerializerPlugin {
 
-	private boolean initialized = false;
-
-	@Override
-	public String getDescription() {
-		return "ObjectCSVSerializer";
-	}
-
-	@Override
-	public String getVersion() {
-		return "1.0";
-	}
-
 	@Override
 	public void init(PluginManagerInterface pluginManager) throws PluginException {
-		initialized = true;
-	}
-	
-	@Override
-	public boolean needsGeometry() {
-		return false;
 	}
 
 	@Override
@@ -69,11 +51,6 @@ public class ObjectCSVSerializerPlugin extends AbstractSerializerPlugin {
 	@Override
 	public String getDefaultExtension() {
 		return "csv";
-	}
-
-	@Override
-	public boolean isInitialized() {
-		return initialized;
 	}
 
 	@Override

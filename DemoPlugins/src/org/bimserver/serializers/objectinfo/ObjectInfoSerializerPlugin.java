@@ -29,26 +29,8 @@ import org.bimserver.shared.exceptions.PluginException;
 
 public class ObjectInfoSerializerPlugin extends AbstractSerializerPlugin {
 
-	private boolean initialized = false;
-
-	@Override
-	public String getDescription() {
-		return "ObjectInfoSerializer";
-	}
-
-	@Override
-	public String getVersion() {
-		return "1.0";
-	}
-
 	@Override
 	public void init(PluginManagerInterface pluginManager) throws PluginException {
-		initialized = true;
-	}
-	
-	@Override
-	public boolean needsGeometry() {
-		return false;
 	}
 
 	@Override
@@ -69,11 +51,6 @@ public class ObjectInfoSerializerPlugin extends AbstractSerializerPlugin {
 	@Override
 	public String getDefaultExtension() {
 		return "html";
-	}
-
-	@Override
-	public boolean isInitialized() {
-		return initialized;
 	}
 
 	@Override

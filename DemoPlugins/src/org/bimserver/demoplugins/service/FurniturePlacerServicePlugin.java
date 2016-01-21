@@ -56,7 +56,7 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FurniturePlacerServicePlugin.class);
 
 	public FurniturePlacerServicePlugin() {
-		super("Furniture Placer", "Furniture Placer");
+		super("Furniture Placer");
 	}
 
 	@Override
