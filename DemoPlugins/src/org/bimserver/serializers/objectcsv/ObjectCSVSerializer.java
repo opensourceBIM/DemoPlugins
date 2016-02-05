@@ -50,11 +50,6 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 public class ObjectCSVSerializer extends EmfSerializer {
 
-	@Override
-	public void reset() {
-		setMode(Mode.BODY);
-	}
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean write(OutputStream outputStream, ProgressReporter progressReporter) throws SerializerException {

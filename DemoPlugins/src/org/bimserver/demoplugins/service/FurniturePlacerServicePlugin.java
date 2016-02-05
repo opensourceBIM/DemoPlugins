@@ -47,6 +47,7 @@ import org.bimserver.plugins.services.AbstractModifyRevisionService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 import org.bimserver.shared.GuidCompressor;
 import org.bimserver.utils.CollectionUtils;
+import org.bimserver.utils.DeserializerUtils;
 import org.eclipse.emf.ecore.EClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,7 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		IOUtils.copy(resourceAsInputStream, byteArrayOutputStream);
 		resourceAsInputStream.close();
-		IfcModelInterface furnishingModel = deserializer.read(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), "picknicktable.ifc", byteArrayOutputStream.size());
+		IfcModelInterface furnishingModel = DeserializerUtils.readFromBytes(deserializer, byteArrayOutputStream.toByteArray(), "picknicktable.ifc");
 
 		IfcSIPrefix prefix = IfcSIPrefix.NULL;
 		for (IfcSIUnit ifcUnit : model.getAllWithSubTypes(IfcSIUnit.class)) {

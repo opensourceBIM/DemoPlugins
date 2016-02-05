@@ -25,7 +25,7 @@ import org.bimserver.models.store.StoreFactory;
 import org.bimserver.models.store.StringType;
 import org.bimserver.models.store.Trigger;
 import org.bimserver.plugins.PluginConfiguration;
-import org.bimserver.plugins.PluginManagerInterface;
+import org.bimserver.plugins.PluginContext;
 import org.bimserver.plugins.services.BimServerClientInterface;
 import org.bimserver.plugins.services.NewRevisionHandler;
 import org.bimserver.plugins.services.ServicePlugin;
@@ -45,13 +45,8 @@ public class CloneService extends ServicePlugin {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CloneService.class);
 
 	@Override
-	public void init(PluginManagerInterface pluginManager) throws PluginException {
-		super.init(pluginManager);
-	}
-
-	@Override
-	public String getDefaultName() {
-		return "Clone Service";
+	public void init(PluginContext pluginContext) throws PluginException {
+		super.init(pluginContext);
 	}
 
 	@Override
