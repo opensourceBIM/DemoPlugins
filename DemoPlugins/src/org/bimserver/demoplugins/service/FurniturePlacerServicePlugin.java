@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.bimserver.emf.IfcModelInterface;
+import org.bimserver.emf.MetaDataManager;
 import org.bimserver.emf.OidProvider;
 import org.bimserver.ifc.Scaler;
 import org.bimserver.interfaces.objects.SActionState;
@@ -82,12 +83,11 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 		SProject project = bimServerClientInterface.getBimsie1ServiceInterface().getProjectByPoid(poid);
 		final IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false);
 		
-		DeserializerPlugin deserializerPlugin = getPluginManager().getDeserializerPlugin("org.bimserver.ifc.step.deserializer.Ifc2x3tc1StepDeserializerPlugin", true);
+		DeserializerPlugin deserializerPlugin = getPluginContext().getDeserializerPlugin("org.bimserver.ifc.step.deserializer.Ifc2x3tc1StepDeserializerPlugin", true);
 		
 		Deserializer deserializer = deserializerPlugin.createDeserializer(null);
 		deserializer.init(model.getPackageMetaData());
-		PluginContext pluginContext = getPluginManager().getPluginContext(FurniturePlacerServicePlugin.this);
-		Path pickNickTableFile = pluginContext.getRootPath().resolve("data").resolve("picknicktable.ifc");
+		Path pickNickTableFile = getPluginContext().getRootPath().resolve("data").resolve("picknicktable.ifc");
 		InputStream resourceAsInputStream = Files.newInputStream(pickNickTableFile);
 		
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -116,7 +116,8 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 			}
 		}
 
-		ModelHelper modelHelper = new ModelHelper(getPluginManager().getMetaDataManager(), new HideAllInversesObjectIDM(CollectionUtils.singleSet(Ifc2x3tc1Package.eINSTANCE), getPluginManager().getMetaDataManager().getPackageMetaData("ifc2x3tc1")), model);
+		MetaDataManager metaDataManager = getPluginContext().getMetaDataManager();
+		ModelHelper modelHelper = new ModelHelper(metaDataManager, new HideAllInversesObjectIDM(CollectionUtils.singleSet(Ifc2x3tc1Package.eINSTANCE), metaDataManager.getPackageMetaData("ifc2x3tc1")), model);
 
 		modelHelper.setTargetModel(model);
 		modelHelper.setObjectFactory(model);
