@@ -1,5 +1,4 @@
 package org.bimserver.demoplugins.service;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -40,7 +39,6 @@ import org.bimserver.models.ifc2x3tc1.IfcShapeRepresentation;
 import org.bimserver.models.ifc2x3tc1.IfcSpace;
 import org.bimserver.models.ifc2x3tc1.IfcUnitEnum;
 import org.bimserver.plugins.ModelHelper;
-import org.bimserver.plugins.PluginContext;
 import org.bimserver.plugins.deserializers.Deserializer;
 import org.bimserver.plugins.deserializers.DeserializerPlugin;
 import org.bimserver.plugins.objectidms.HideAllInversesObjectIDM;

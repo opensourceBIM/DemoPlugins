@@ -55,6 +55,7 @@ public class EventLog implements Iterable<Event> {
 		this.materialAggregators = materialAggregators;
 		CSVReader reader = new CSVReader(new InputStreamReader(inputStream, Charsets.UTF_8));
 		try {
+			@SuppressWarnings("unused")
 			String[] header = reader.readNext();
 			String[] line = reader.readNext();
 			while (line != null) {
