@@ -34,13 +34,13 @@ public class Lod2CsvServicePlugin extends AbstractAddExtendedDataService {
 	private static final String NAMESPACE = "http://bimserver.org/lodcsv";
 	
 	public Lod2CsvServicePlugin() {
-		super("LOD to CSV", NAMESPACE);
+		super(NAMESPACE);
 	}
 
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid,
 			long roid, String userToken, long soid, SObjectType settings) throws Exception {
-		SProject project = bimServerClientInterface.getBimsie1ServiceInterface().getProjectByPoid(poid);
+		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
 		IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false, true);
 		
 		ByteArrayOutputStream outAll = new ByteArrayOutputStream();

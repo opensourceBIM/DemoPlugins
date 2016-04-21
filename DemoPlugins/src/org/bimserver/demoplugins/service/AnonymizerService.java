@@ -22,12 +22,12 @@ public class AnonymizerService extends AbstractModifyRevisionService {
 	private static final String ANONYMIZED = "[ANONYMIZED]";
 
 	public AnonymizerService() {
-		super("AnonymizerService");
+		super();
 	}
 
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws ServerException, UserException, PublicInterfaceNotFoundException, BimServerClientException {
-		SProject project = bimServerClientInterface.getBimsie1ServiceInterface().getProjectByPoid(poid);
+		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
 		final IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false);
 
 		SService service = bimServerClientInterface.getServiceInterface().getService(soid);

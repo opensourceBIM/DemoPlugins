@@ -11,7 +11,7 @@ public class PlanningConsultServiceHtml extends AbstractPlanningConsultService {
 	private static final String NAMESPACE = "http://bimserver.org/planningconsult";
 
 	public PlanningConsultServiceHtml() {
-		super("Planning Consult HTML", NAMESPACE);
+		super(NAMESPACE);
 	}
 	
 	@Override

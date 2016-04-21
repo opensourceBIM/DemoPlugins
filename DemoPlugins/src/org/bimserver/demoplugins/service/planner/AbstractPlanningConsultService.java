@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractPlanningConsultService extends AbstractAddExtendedDataService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPlanningConsultService.class);
 	
-	public AbstractPlanningConsultService(String name, String namespace) {
-		super(name, namespace);
+	public AbstractPlanningConsultService(String namespace) {
+		super(namespace);
 	}
 
 	protected abstract void createExtendedData(Planner planner, IfcModelInterface model, BimServerClientInterface bimServerClientInterface, long roid);
@@ -35,7 +35,7 @@ public abstract class AbstractPlanningConsultService extends AbstractAddExtended
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws ServerException, UserException, PublicInterfaceNotFoundException, BimServerClientException {
 		try {
-			SProject project = bimServerClientInterface.getBimsie1ServiceInterface().getProjectByPoid(poid);
+			SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
 			IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false, false);
 
 			byte[] eventLogBytes = runningService.getPluginConfiguration().getByteArray("EventLog");

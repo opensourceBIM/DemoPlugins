@@ -15,12 +15,12 @@ import org.bimserver.plugins.services.BimServerClientInterface;
 public class GuidFixerService extends AbstractModifyRevisionService {
 
 	public GuidFixerService() {
-		super("GUID fixer");
+		super();
 	}
 
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws Exception {
-		SProject project = bimServerClientInterface.getBimsie1ServiceInterface().getProjectByPoid(poid);
+		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
 		IfcModelInterface model = bimServerClientInterface.getModel(project, roid, false, false);
 		Map<String, List<IfcRoot>> guids = new HashMap<String, List<IfcRoot>>();
 		int fixed = 0;

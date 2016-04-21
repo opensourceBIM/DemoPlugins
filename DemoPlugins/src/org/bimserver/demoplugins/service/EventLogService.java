@@ -19,12 +19,12 @@ public class EventLogService extends AbstractAddExtendedDataService {
 	private static final String NAMESPACE = "http://bimserver.org/eventlog";
 
 	public EventLogService() {
-		super("EventLog", NAMESPACE);
+		super(NAMESPACE);
 	}
 	
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws Exception {
-		SProject project = bimServerClientInterface.getBimsie1ServiceInterface().getProjectByPoid(poid);
+		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
 		IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false, true);
 		
 		PluginConfiguration pluginConfiguration = new org.bimserver.plugins.PluginConfiguration(settings);

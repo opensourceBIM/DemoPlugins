@@ -41,7 +41,7 @@ public class GeometryMatcher extends AbstractAddExtendedDataService {
 	private static final String NAMESPACE = "geometrymatching";
 
 	public GeometryMatcher() {
-		super("Geometry Matcher", NAMESPACE);
+		super(NAMESPACE);
 	}
 
 	@Override

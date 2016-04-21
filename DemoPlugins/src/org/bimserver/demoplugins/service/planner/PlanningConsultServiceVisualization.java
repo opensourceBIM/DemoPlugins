@@ -16,7 +16,7 @@ public class PlanningConsultServiceVisualization extends AbstractPlanningConsult
 	private static final String NAMESPACE = "http://bimserver.org/3dvisualizationeffects";
 
 	public PlanningConsultServiceVisualization() {
-		super("Planning Consult Visualization", NAMESPACE);
+		super(NAMESPACE);
 	}
 
 	@Override

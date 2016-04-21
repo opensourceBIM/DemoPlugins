@@ -72,11 +72,6 @@ public class CloneService extends ServicePlugin {
 	}
 
 	@Override
-	public String getTitle() {
-		return "Clone Service";
-	}
-
-	@Override
 	public void register(long uoid, SInternalServicePluginConfiguration internalServicePluginConfiguration, final PluginConfiguration pluginConfiguration) {
 		ServiceDescriptor serviceDescriptor = StoreFactory.eINSTANCE.createServiceDescriptor();
 		serviceDescriptor.setProviderName("BIMserver");
@@ -101,7 +96,7 @@ public class CloneService extends ServicePlugin {
 					state.setStart(startDate);
 					bimServerClientInterface.getRegistry().updateProgressTopic(topicId, state);
 
-					SSerializerPluginConfiguration stepSerializerRemote = bimServerClientInterface.getBimsie1ServiceInterface().getSerializerByContentType("application/ifc");
+					SSerializerPluginConfiguration stepSerializerRemote = bimServerClientInterface.getServiceInterface().getSerializerByContentType("application/ifc");
 					
 					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 					bimServerClientInterface.download(roid, stepSerializerRemote.getOid(), outputStream);
@@ -112,14 +107,14 @@ public class CloneService extends ServicePlugin {
 					
 					String localProjectName = pluginConfiguration.getString("projectName");
 					
-					List<SProject> projectsByName = localClient.getBimsie1ServiceInterface().getProjectsByName(localProjectName);
+					List<SProject> projectsByName = localClient.getServiceInterface().getProjectsByName(localProjectName);
 					if (projectsByName.isEmpty()) {
 						throw new UserException("No project with name \"" + localProjectName + "\" was found");
 					}
 					SProject localProject = projectsByName.get(0);
 					
-					SDeserializerPluginConfiguration localDeserializer = localClient.getBimsie1ServiceInterface().getDeserializerByName("IfcStepDeserializer");
-					localClient.getBimsie1ServiceInterface().checkin(localProject.getOid(), "Blaat", localDeserializer.getOid(), (long) outputStream.size(), "filename.ifc", new DataHandler(new InputStreamDataSource(new ByteArrayInputStream(outputStream.toByteArray()))), true);
+					SDeserializerPluginConfiguration localDeserializer = localClient.getServiceInterface().getDeserializerByName("IfcStepDeserializer");
+					localClient.getServiceInterface().checkin(localProject.getOid(), "Blaat", localDeserializer.getOid(), (long) outputStream.size(), "filename.ifc", new DataHandler(new InputStreamDataSource(new ByteArrayInputStream(outputStream.toByteArray()))), true, true);
 				} catch (PublicInterfaceNotFoundException e) {
 					LOGGER.error("", e);
 				} catch (ServiceException e) {

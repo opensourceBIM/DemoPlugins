@@ -41,12 +41,12 @@ public class Lod2ExcelServicePlugin extends AbstractAddExtendedDataService {
 	private WritableCellFormat timesbold;
 
 	public Lod2ExcelServicePlugin() {
-		super("LOD to Excel", NAMESPACE);
+		super(NAMESPACE);
 	}
 
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws Exception {
-		SProject project = bimServerClientInterface.getBimsie1ServiceInterface().getProjectByPoid(poid);
+		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
 		IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false);
 		
 	    WorkbookSettings wbSettings = new WorkbookSettings();
