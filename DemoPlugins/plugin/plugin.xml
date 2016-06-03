@@ -4,76 +4,90 @@
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.GuidFixerService</implementationClass>
 		<description>Service that fixes double GUIDS by generating new ones</description>
+		<name>Guid Fixer</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.AnonymizerService</implementationClass>
 		<description>Service that anonymises a model by removing user-related info</description>
+		<name>Anynymizer</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.FurniturePlacerServicePlugin</implementationClass>
 		<description>Service which places random furniture in a model</description>
+		<name>Furniture Placer</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.CloneService</implementationClass>
 		<description>Service that will just store all models sent to it locally</description>
+		<name>Cloner</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.Lod2ExcelServicePlugin</implementationClass>
 		<description>Service that generates an excel document with LOD information</description>
+		<name>Level Of Detail (LOD) to Excel</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.Lod2CsvServicePlugin</implementationClass>
 		<description>Service that generates a CSV file with LOD information</description>
+		<name>Level Of Detail (LOD) to CSV</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.GeometryMatcher</implementationClass>
 		<description>Services that matches geometry</description>
+		<name>Geometry Matcher</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.modelchecker.ModelCheckerPlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.modelcheckers.LcieModelCheckerPlugin</implementationClass>
 		<description>Lcie model checker</description>
+		<name>Lcie Model Checker</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.HtmlService</implementationClass>
 		<description>Html Demo Service</description>
+		<name>HTML Demo Service</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.EventLogService</implementationClass>
 		<description>EventLog Service</description>
+		<name>Event Log</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.planner.PlanningConsultServiceHtml</implementationClass>
 		<description>Planning Consult Service HTML</description>
+		<name>Planning consult to HTML</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.outerarea.OuterAreaServicePlugin</implementationClass>
-		<name>Outer Area Service</name>
 		<description>Outer Area Service Plugin</description>
+		<name>Outer Area Service</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.planner.PlanningConsultServiceVisualization</implementationClass>
 		<description>Planning consult service visualization</description>
+		<name>Planning consult to JSON Visualization</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.serializers.SerializerPlugin</interfaceClass>
 		<implementationClass>org.bimserver.serializers.objectinfo.ObjectInfoSerializerPlugin</implementationClass>
 		<description>ObjectInfo serializer</description>
+		<name>Basic Object Info</name>
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.serializers.SerializerPlugin</interfaceClass>
 		<implementationClass>org.bimserver.serializers.objectcsv.ObjectCSVSerializerPlugin</implementationClass>
 		<description>ObjectCSV serializer</description>
+		<name>Object CSV</name>
 	</JavaPlugin>
 </PluginDescriptor>
