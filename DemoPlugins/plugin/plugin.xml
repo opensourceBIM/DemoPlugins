@@ -57,6 +57,11 @@
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
+		<implementationClass>org.bimserver.demoplugins.outerarea.OuterAreaServicePlugin</implementationClass>
+		<description>Outer Area Service Plugin</description>
+	</JavaPlugin>
+	<JavaPlugin>
+		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.planner.PlanningConsultServiceVisualization</implementationClass>
 		<description>Planning consult service visualization</description>
 	</JavaPlugin>
