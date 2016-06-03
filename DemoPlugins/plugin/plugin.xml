@@ -58,6 +58,7 @@
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.outerarea.OuterAreaServicePlugin</implementationClass>
+		<name>Outer Area Service</name>
 		<description>Outer Area Service Plugin</description>
 	</JavaPlugin>
 	<JavaPlugin>
