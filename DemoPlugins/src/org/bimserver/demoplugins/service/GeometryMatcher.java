@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.bimserver.emf.IdEObject;
 import org.bimserver.emf.IfcModelInterface;
+import org.bimserver.geometry.AxisAlignedBoundingBox;
 import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.interfaces.objects.SProjectSmall;
 import org.bimserver.models.ifc2x3tc1.IfcElement;
@@ -46,7 +47,7 @@ public class GeometryMatcher extends AbstractAddExtendedDataService {
 
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws Exception {
-		Map<SProjectSmall, Map<BoundingBox, IfcOpeningElement>> map = new HashMap<>();
+		Map<SProjectSmall, Map<AxisAlignedBoundingBox, IfcOpeningElement>> map = new HashMap<>();
 		
 		Map<Long, String> projectNames = new LinkedHashMap<>();
 		
@@ -55,7 +56,7 @@ public class GeometryMatcher extends AbstractAddExtendedDataService {
 			if (project.getLastRevisionId() != -1 && project.getNrSubProjects() == 0) {
 				projectNames.put(project.getOid(), project.getName());
 				IfcModelInterface model = bimServerClientInterface.getModel(null, project.getLastRevisionId(), false, false); // TODO
-				Map<BoundingBox, IfcOpeningElement> boundingBoxes = new HashMap<>();
+				Map<AxisAlignedBoundingBox, IfcOpeningElement> boundingBoxes = new HashMap<>();
 				map.put(project, boundingBoxes);
 				for (IfcOpeningElement ifcOpeningElement : model.getAll(IfcOpeningElement.class)) {
 					
@@ -74,7 +75,7 @@ public class GeometryMatcher extends AbstractAddExtendedDataService {
 //						boundingBox.process(new float[]{vertexBuffer.get(index3), vertexBuffer.get(index3 + 1), vertexBuffer.get(index3 + 2)});
 //					}
 					
-					BoundingBox boundingBox = new BoundingBox(new float[]{geometry.getMinX(), geometry.getMinY(), geometry.getMinZ()}, new float[]{geometry.getMaxX(), geometry.getMaxY(), geometry.getMaxZ()});
+					AxisAlignedBoundingBox boundingBox = new AxisAlignedBoundingBox(new float[]{geometry.getMinX(), geometry.getMinY(), geometry.getMinZ()}, new float[]{geometry.getMaxX(), geometry.getMaxY(), geometry.getMaxZ()});
 					
 					boundingBoxes.put(boundingBox, ifcOpeningElement);
 				}
@@ -168,16 +169,16 @@ public class GeometryMatcher extends AbstractAddExtendedDataService {
 		}
 	}
 
-	private List<Hit> analyze(Map<SProjectSmall, Map<BoundingBox, IfcOpeningElement>> map) {
+	private List<Hit> analyze(Map<SProjectSmall, Map<AxisAlignedBoundingBox, IfcOpeningElement>> map) {
 		Set<IfcOpeningElement> matched = new HashSet<>();
 		List<Hit> hits = new ArrayList<>();
 		for (SProjectSmall project : map.keySet()) {
-			Map<BoundingBox, IfcOpeningElement> m = map.get(project);
-			for (BoundingBox b : m.keySet()) {
+			Map<AxisAlignedBoundingBox, IfcOpeningElement> m = map.get(project);
+			for (AxisAlignedBoundingBox b : m.keySet()) {
 				for (SProjectSmall project2 : map.keySet()) {
 					if (project2.getOid() != project.getOid()) {
-						Map<BoundingBox, IfcOpeningElement> m2 = map.get(project2);
-						for (BoundingBox b2 : m2.keySet()) {
+						Map<AxisAlignedBoundingBox, IfcOpeningElement> m2 = map.get(project2);
+						for (AxisAlignedBoundingBox b2 : m2.keySet()) {
 							if (b.closeTo(b2)) {
 								if (!matched.contains(m.get(b)) && !matched.contains(m2.get(b2))) {
 									hits.add(new Hit(project, project2, b, b2, m.get(b), m2.get(b2)));
@@ -193,58 +194,15 @@ public class GeometryMatcher extends AbstractAddExtendedDataService {
 		return hits;
 	}
 	
-	public static class BoundingBox {
-		private float[] min;
-		private float[] max;
-		
-		public BoundingBox(float[] min, float[] max) {
-			this.min = min;
-			this.max = max;
-		}
-		
-		public BoundingBox() {
-			min = new float[]{Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE};
-			max = new float[]{-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
-		}
-
-		public void process(float[] point) {
-			for (int i=0; i<3; i++) {
-				if (point[i] < min[i]) {
-					min[i] = point[i];
-				}
-				if (point[i] > max[i]) {
-					max[i] = point[i];
-				}
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return min[0] + ", " + min[1] + ", " + min[2] + " / " + max[0] + ", " + max[1] + ", " + max[2];
-		}
-
-		public boolean closeTo(BoundingBox other) {
-			for (int i=0; i<3; i++) {
-				if (Math.abs(min[i] - other.min[i]) > .005) {
-					return false;
-				}
-				if (Math.abs(max[i] - other.max[i]) > .005) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-	
 	public static class Hit {
 		public IfcOpeningElement el1;
 		public IfcOpeningElement el2;
-		public BoundingBox b1;
-		public BoundingBox b2;
+		public AxisAlignedBoundingBox b1;
+		public AxisAlignedBoundingBox b2;
 		public SProjectSmall secondProject;
 		public SProjectSmall firstProject;
 
-		public Hit(SProjectSmall firstProject, SProjectSmall secondProject, BoundingBox b1, BoundingBox b2, IfcOpeningElement el1, IfcOpeningElement el2) {
+		public Hit(SProjectSmall firstProject, SProjectSmall secondProject, AxisAlignedBoundingBox b1, AxisAlignedBoundingBox b2, IfcOpeningElement el1, IfcOpeningElement el2) {
 			this.firstProject = firstProject;
 			this.secondProject = secondProject;
 			this.b1 = b1;

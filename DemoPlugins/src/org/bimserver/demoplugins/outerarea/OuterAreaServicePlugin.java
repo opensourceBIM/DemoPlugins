@@ -63,7 +63,7 @@ public class OuterAreaServicePlugin extends AbstractAddExtendedDataService {
 				continue;
 			}
 			
-			Tristate isExternal = IfcUtils.getBooleanProperty(ifcProduct);
+			Tristate isExternal = IfcUtils.getBooleanProperty(ifcProduct, "IsExternal");
 			if (isExternal == Tristate.TRUE) {
 				GeometryInfo geometryInfo = ifcProduct.getGeometry();
 				if (geometryInfo != null) {
