@@ -99,11 +99,11 @@ public class Lod2CsvServicePlugin extends AbstractAddExtendedDataService {
 		
 		double totalSpaceM3 = 0;
 		
-//			ObjectMapper objectMapper = new ObjectMapper();
-//			ObjectNode query = objectMapper.createObjectNode();
-//			ArrayNode queries = objectMapper.createArrayNode();
+//			ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+//			ObjectNode query = OBJECT_MAPPER.createObjectNode();
+//			ArrayNode queries = OBJECT_MAPPER.createArrayNode();
 //			query.set("queries", queries);
-//			ObjectNode geometryQuery = objectMapper.createObjectNode();
+//			ObjectNode geometryQuery = OBJECT_MAPPER.createObjectNode();
 //			queries.add(geometryQuery);
 //			geometryQuery.put("type", "GeometryInfo");
 		
