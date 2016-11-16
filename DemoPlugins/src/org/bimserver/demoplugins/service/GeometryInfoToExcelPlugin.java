@@ -1,0 +1,101 @@
+package org.bimserver.demoplugins.service;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Locale;
+
+import org.bimserver.emf.IfcModelInterface;
+import org.bimserver.interfaces.objects.SObjectType;
+import org.bimserver.interfaces.objects.SProject;
+import org.bimserver.models.ifc2x3tc1.IfcProduct;
+import org.bimserver.plugins.services.AbstractAddExtendedDataService;
+import org.bimserver.plugins.services.BimServerClientInterface;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Formula;
+import jxl.write.Label;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+
+public class GeometryInfoToExcelPlugin extends AbstractAddExtendedDataService  {
+
+	private static final String SCHEMA_NAME = "3D_INFO_EXCEL_1.0";
+	private WritableCellFormat times;
+	private WritableCellFormat timesbold;
+
+	public GeometryInfoToExcelPlugin() {
+		super(SCHEMA_NAME);
+	}
+
+	@Override
+	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws Exception {
+	    WorkbookSettings wbSettings = new WorkbookSettings();
+		
+	    wbSettings.setLocale(new Locale("en", "EN"));
+	    
+	    WritableWorkbook workbook = null;
+
+	    WritableFont times10pt = new WritableFont(WritableFont.ARIAL, 10);
+	    times = new WritableCellFormat(times10pt);
+
+	    WritableFont times10ptbold = new WritableFont(WritableFont.ARIAL, 10);
+	    times10ptbold.setBoldStyle(WritableFont.BOLD);
+	    timesbold = new WritableCellFormat(times10ptbold);
+	    
+	    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		workbook = Workbook.createWorkbook(byteArrayOutputStream, wbSettings);
+	    WritableSheet sheet = workbook.createSheet("All", 0);
+	    
+	    sheet.addCell(new Label(0, 0, "Type", timesbold));
+	    sheet.addCell(new Label(1, 0, "Guid", timesbold));
+	    sheet.addCell(new Label(2, 0, "Triangles", timesbold));
+	    sheet.addCell(new Label(3, 0, "Indices", timesbold));
+	    sheet.addCell(new Label(4, 0, "Vertices", timesbold));
+		sheet.addCell(new Label(5, 0, "Normals", timesbold));
+		sheet.addCell(new Label(6, 0, "Colors", timesbold));
+		sheet.addCell(new Label(7, 0, "Total triangle area", timesbold));
+		sheet.addCell(new Label(8, 0, "Average triangle size", timesbold));
+		
+		int row = 2;
+		
+		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
+		IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false, true);
+		for (IfcProduct ifcProduct : model.getAllWithSubTypes(IfcProduct.class)) {
+			if (ifcProduct.getGeometry() != null) {
+				int nrTriangles = ifcProduct.getGeometry().getPrimitiveCount();
+				int nrIndices = ifcProduct.getGeometry().getData().getIndices().length / 4;
+				int nrVertices = ifcProduct.getGeometry().getData().getVertices().length / 4;
+				int nrNormals = ifcProduct.getGeometry().getData().getNormals().length / 4;
+				int nrColors = ifcProduct.getGeometry().getData().getMaterials().length / 4;
+
+				TriangleIterator triangleIterator = new TriangleIterator(ifcProduct.getGeometry().getData());
+				float totalArea =  0;
+				while (triangleIterator.hasNext()) {
+					Triangle triangle = triangleIterator.next();
+					float area = triangle.area();
+					totalArea += area;
+				}
+				
+				sheet.addCell(new Label(0, row, ifcProduct.eClass().getName(), times));
+				sheet.addCell(new Label(1, row, ifcProduct.getGlobalId(), times));
+				sheet.addCell(new jxl.write.Number(2, row, nrTriangles, times));
+				sheet.addCell(new jxl.write.Number(3, row, nrIndices, times));
+				sheet.addCell(new jxl.write.Number(4, row, nrVertices, times));
+				sheet.addCell(new jxl.write.Number(5, row, nrNormals, times));
+				sheet.addCell(new jxl.write.Number(6, row, nrColors, times));
+				sheet.addCell(new jxl.write.Number(7, row, totalArea, times));
+				sheet.addCell(new Formula(8, row, "H" + (row + 1) + "/C" + (row + 1), times));
+				
+				row++;
+			}
+		}
+	    
+	    workbook.write();
+		workbook.close();
+
+		byte[] bytes = byteArrayOutputStream.toByteArray();
+		addExtendedData(bytes, "geometryinfo.xls", "Excel LOD Results", "application/excel", bimServerClientInterface, roid);
+	}
+}

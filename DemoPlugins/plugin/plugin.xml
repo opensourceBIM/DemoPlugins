@@ -85,6 +85,12 @@
 		<name>Basic Object Info</name>
 	</JavaPlugin>
 	<JavaPlugin>
+		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
+		<implementationClass>org.bimserver.demoplugins.service.GeometryInfoToExcelPlugin</implementationClass>
+		<description>Writes geometry information of all objects to Excel file</description>
+		<name>Geometry info to excel</name>
+	</JavaPlugin>
+	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.serializers.SerializerPlugin</interfaceClass>
 		<implementationClass>org.bimserver.serializers.objectcsv.ObjectCSVSerializerPlugin</implementationClass>
 		<description>ObjectCSV serializer</description>
