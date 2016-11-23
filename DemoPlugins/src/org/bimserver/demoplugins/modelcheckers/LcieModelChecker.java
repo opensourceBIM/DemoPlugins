@@ -70,9 +70,4 @@ public class LcieModelChecker implements ModelChecker {
 		}
 		return result;
 	}
-
-	@Override
-	public byte[] compile(String code) throws ModelCheckException {
-		return null;
-	}
 }

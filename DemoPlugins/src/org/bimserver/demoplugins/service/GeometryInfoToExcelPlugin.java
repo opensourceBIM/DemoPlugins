@@ -7,6 +7,7 @@ import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.interfaces.objects.SProject;
 import org.bimserver.models.ifc2x3tc1.IfcProduct;
+import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.AbstractAddExtendedDataService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 
@@ -21,7 +22,7 @@ import jxl.write.WritableWorkbook;
 
 public class GeometryInfoToExcelPlugin extends AbstractAddExtendedDataService  {
 
-	private static final String SCHEMA_NAME = "3D_INFO_EXCEL_1.0";
+	private static final String SCHEMA_NAME = SchemaName.INFO_3D_EXCEL_1_0.name();
 	private WritableCellFormat times;
 	private WritableCellFormat timesbold;
 
