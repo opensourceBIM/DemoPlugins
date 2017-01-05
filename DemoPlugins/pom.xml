@@ -5,6 +5,7 @@
 	<version>0.0.10-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<timestamp>${maven.build.timestamp}</timestamp>
 	</properties>
 	<description>BIMserver plugins for demo purposes</description>
 	<build>
@@ -13,6 +14,7 @@
 			<resource>
 				<targetPath>plugin</targetPath>
 				<directory>plugin</directory>
+				<filtering>true</filtering>
 			</resource>
 			<resource>
 				<targetPath>data</targetPath>
@@ -37,27 +39,15 @@
 									<type>xml</type>
 									<classifier>plugin</classifier>
 								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-icon</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
 								<artifact>
 									<file>icon.png</file>
 									<type>png</type>
 									<classifier>icon</classifier>
+								</artifact>
+								<artifact>
+									<file>version.properties</file>
+									<type>properties</type>
+									<classifier>version</classifier>
 								</artifact>
 							</artifacts>
 						</configuration>
@@ -172,12 +162,12 @@
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
 			<artifactId>pluginbase</artifactId>
-			<version>1.5.63-SNAPSHOT</version>
+			<version>1.5.64-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
 			<artifactId>shared</artifactId>
-			<version>1.5.63-SNAPSHOT</version>
+			<version>1.5.64-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
