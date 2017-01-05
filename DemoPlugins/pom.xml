@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opensourcebim</groupId>
 	<artifactId>demoplugins</artifactId>
-	<version>0.0.10-SNAPSHOT</version>
+	<version>0.0.12-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<timestamp>${maven.build.timestamp}</timestamp>
@@ -161,18 +161,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
-			<artifactId>pluginbase</artifactId>
-			<version>1.5.64-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.opensourcebim</groupId>
 			<artifactId>shared</artifactId>
-			<version>1.5.64-SNAPSHOT</version>
+			<version>1.5.63</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
 			<artifactId>bcf</artifactId>
-			<version>0.0.9</version>
+			<version>0.0.10</version>
 		</dependency>
 	</dependencies>
 	<distributionManagement>
