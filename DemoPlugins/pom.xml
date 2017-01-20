@@ -2,9 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opensourcebim</groupId>
 	<artifactId>demoplugins</artifactId>
-	<version>0.0.10-SNAPSHOT</version>
+	<version>0.0.16-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
 	</properties>
 	<description>BIMserver plugins for demo purposes</description>
 	<build>
@@ -13,6 +15,7 @@
 			<resource>
 				<targetPath>plugin</targetPath>
 				<directory>plugin</directory>
+				<filtering>true</filtering>
 			</resource>
 			<resource>
 				<targetPath>data</targetPath>
@@ -20,6 +23,28 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}/plugin</outputDirectory>
+							<resources>
+								<resource>
+									<directory>plugin</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -37,27 +62,15 @@
 									<type>xml</type>
 									<classifier>plugin</classifier>
 								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-icon</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
 								<artifact>
 									<file>icon.png</file>
 									<type>png</type>
 									<classifier>icon</classifier>
+								</artifact>
+								<artifact>
+									<file>${project.build.outputDirectory}/plugin/version.properties</file>
+									<type>properties</type>
+									<classifier>version</classifier>
 								</artifact>
 							</artifacts>
 						</configuration>
@@ -168,11 +181,6 @@
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.opensourcebim</groupId>
-			<artifactId>pluginbase</artifactId>
-			<version>1.5.63</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
