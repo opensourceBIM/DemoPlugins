@@ -74,7 +74,7 @@ public class PathChecker {
 						if (ifcRepresentationItem instanceof IfcExtrudedAreaSolid) {
 							IfcExtrudedAreaSolid ifcExtrudedAreaSolid = (IfcExtrudedAreaSolid) ifcRepresentationItem;
 							IfcAxis2Placement3D position = ifcExtrudedAreaSolid.getPosition();
-							IfcCartesianPoint location = position.getLocation();
+//							IfcCartesianPoint location = position.getLocation();
 							
 //								1 0 0 0 <- 3de argument
 //								0 1 0 0 <- cross product van 2 en 3 (levert ortogonale vector op)

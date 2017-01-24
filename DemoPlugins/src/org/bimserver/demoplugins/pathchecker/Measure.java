@@ -26,10 +26,10 @@ public class Measure {
 	private Point2D.Float p6;
 	private Rectangle2D bounds;
 	private float scale;
-	private Point2D.Float p7;
-	private Point2D.Float p8;
-	private Point2D.Float p9;
-	private Point2D.Float p10;
+//	private Point2D.Float p7;
+//	private Point2D.Float p8;
+//	private Point2D.Float p9;
+//	private Point2D.Float p10;
 
 	public Measure(Point2D.Float p1, Point2D.Float p2, Area area, Rectangle2D bounds, float scale) {
 		this.p1 = p1;
@@ -57,10 +57,10 @@ public class Measure {
 		p4 = new Point2D.Float((float)(p2.getX() + addX * sign), (float)(p2.getY() + addY * sign));
 		p5 = new Point2D.Float((float)(p1.getX() + Math.sin(angle) * (DIST_STICK_OUT / scale) * sign), (float)(p1.getY() + Math.cos(angle) * (DIST_STICK_OUT / scale) * sign));
 		p6 = new Point2D.Float((float)(p2.getX() + Math.sin(angle) * (DIST_STICK_OUT / scale) * sign), (float)(p2.getY() + Math.cos(angle) * (DIST_STICK_OUT / scale) * sign));
-		p7 = new Point2D.Float((float)(p3.getX() + (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p1.getY() + Math.cos(angle) * (50 / scale) * sign));
-		p8 = new Point2D.Float((float)(p3.getX() + (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p1.getY() + Math.cos(angle) * (30 / scale) * sign));
-		p9 = new Point2D.Float((float)(p4.getX() - (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p2.getY() + Math.cos(angle) * (50 / scale) * sign));
-		p10 = new Point2D.Float((float)(p4.getX() - (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p2.getY() + Math.cos(angle) * (30 / scale) * sign));
+//		p7 = new Point2D.Float((float)(p3.getX() + (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p1.getY() + Math.cos(angle) * (50 / scale) * sign));
+//		p8 = new Point2D.Float((float)(p3.getX() + (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p1.getY() + Math.cos(angle) * (30 / scale) * sign));
+//		p9 = new Point2D.Float((float)(p4.getX() - (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p2.getY() + Math.cos(angle) * (50 / scale) * sign));
+//		p10 = new Point2D.Float((float)(p4.getX() - (20 / scale) + Math.sin(angle) * (30 / scale) * sign), (float)(p2.getY() + Math.cos(angle) * (30 / scale) * sign));
 	}
 
 	private Point2D convertToScreenCoordinate(Point2D p1) {
@@ -81,10 +81,10 @@ public class Measure {
 		Point2D p4Converted = convertToScreenCoordinate(p4);
 		Point2D p5Converted = convertToScreenCoordinate(p5);
 		Point2D p6Converted = convertToScreenCoordinate(p6);
-		Point2D p7Converted = convertToScreenCoordinate(p7);
-		Point2D p8Converted = convertToScreenCoordinate(p8);
-		Point2D p9Converted = convertToScreenCoordinate(p9);
-		Point2D p10Converted = convertToScreenCoordinate(p10);
+//		Point2D p7Converted = convertToScreenCoordinate(p7);
+//		Point2D p8Converted = convertToScreenCoordinate(p8);
+//		Point2D p9Converted = convertToScreenCoordinate(p9);
+//		Point2D p10Converted = convertToScreenCoordinate(p10);
 
 		graphics2d.draw(new Line2D.Float(p3Converted, p4Converted));
 		graphics2d.draw(new Line2D.Float(p1Converted, p5Converted));
