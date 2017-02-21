@@ -102,9 +102,6 @@
 				<version>2.5.3</version>
 				<configuration>
 					<project.scm.id>github.com</project.scm.id>
-					<checkModificationExcludes>
-						<checkModificationExclude>IfcEngine/pom.xml</checkModificationExclude>
-					</checkModificationExcludes>
 					<useReleaseProfile>false</useReleaseProfile>
 					<releaseProfiles>release</releaseProfiles>
 					<goals>deploy</goals>
