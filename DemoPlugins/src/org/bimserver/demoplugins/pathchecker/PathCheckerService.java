@@ -48,7 +48,7 @@ public class PathCheckerService extends AbstractAddExtendedDataService {
 
 					ViewPoint viewPoint = new ViewPoint();
 					viewPoint.setSnapshot("snapshot.png");
-					viewPoint.setGuid(UUID.randomUUID().toString());
+					viewPoint.setGuid(topicFolder.getUuid().toString());
 					viewPoint.setViewpoint(UUID.randomUUID().toString());
 					topicFolder.getMarkup().getViewpoints().add(viewPoint);
 					

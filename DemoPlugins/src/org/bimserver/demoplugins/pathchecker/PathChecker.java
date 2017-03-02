@@ -266,15 +266,15 @@ public class PathChecker {
 			float[] coords = new float[6];
 			int type = pathIterator.currentSegment(coords);
 			
-			if (type == 0) {
+			if (type == PathIterator.SEG_MOVETO) {
 				pathIterator.currentSegment(coords);
 				first = Arrays.copyOf(coords, coords.length);
-			} else if (type == 1) {
+			} else if (type == PathIterator.SEG_LINETO) {
 				Point2D.Float p1 = new Point2D.Float(coords[0], coords[1]);
 				Point2D.Float p2 = new Point2D.Float(last[0], last[1]);
 				
 				test(spaceCheckResult, graphics2d, scale, affineTransform, areaBeforeTranformation, boundsBeforeTransformation, areaResult, p1, p2);
-			} else if (type == 4) {
+			} else if (type == PathIterator.SEG_CLOSE) {
 				Point2D.Float p1 = new Point2D.Float(first[0], first[1]);
 				Point2D.Float p2 = new Point2D.Float(last[0], last[1]);
 
