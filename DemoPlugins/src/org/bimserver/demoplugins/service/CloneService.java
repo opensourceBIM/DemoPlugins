@@ -31,6 +31,7 @@ import org.bimserver.plugins.services.NewRevisionHandler;
 import org.bimserver.plugins.services.ServicePlugin;
 import org.bimserver.shared.ChannelConnectionException;
 import org.bimserver.shared.UserTokenAuthentication;
+import org.bimserver.shared.exceptions.BimServerClientException;
 import org.bimserver.shared.exceptions.PluginException;
 import org.bimserver.shared.exceptions.PublicInterfaceNotFoundException;
 import org.bimserver.shared.exceptions.ServerException;
@@ -120,6 +121,8 @@ public class CloneService extends ServicePlugin {
 				} catch (ServiceException e) {
 					LOGGER.error("", e);
 				} catch (ChannelConnectionException e) {
+					LOGGER.error("", e);
+				} catch (BimServerClientException e) {
 					LOGGER.error("", e);
 				} finally {
 					SLongActionState state = new SLongActionState();
