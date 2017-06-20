@@ -1,0 +1,20 @@
+Name,density,thermal conductivity,specific heat capacity,dry water vapour resistance,wet water vapour resistance
+Intonaco - Gesso,1000,0.4,1000,10,6
+Cemento Armato - Strutturale,2300,2.3,1000,130,80
+Isolamento - Plastico Duro,920,0.04,2200,100000,100000
+Blocco di Cemento - Riempitivo,1900,1.164,1000,100,60
+Siding; Clapboard - New,700,0.18,1600,200,50
+Rigid insulation,30,0.035,1470,100,100
+Plywood; Sheathing,300,0.09,1600,150,50
+Softwood; Lumber,450,0.12,1600,50,20
+Gypsum Wall Board,700,0.21,1000,10,4
+Concrete; Cast-in-Place gray,2300,2.3,1000,130,80
+Flagstone,2600,2.3,1000,40,30
+Air,1.29,0.024,1000,1,1
+Concrete Masonry Units,850,0.23,750,15,5
+Glass,2500,1,750,Infinity,Infinity 
+145 Baksteen,1750,0.79,840,10,5 
+410 Luchtspouw buiten,1.29,0.024,1000,1,1 
+400 Isolatie wand,30,0.035,800,10,5
+130 Kalkzandsteen,1800,1,920,10,5
+105 Lichte scheidingswand,400,0.5,400,1,1

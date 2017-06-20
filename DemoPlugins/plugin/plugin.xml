@@ -80,6 +80,12 @@
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
+		<implementationClass>org.bimserver.demoplugins.rccalculation.RcCalculationServicePlugin</implementationClass>
+		<description>Rc Calculation Service Plugin</description>
+		<name>Rc Calculation Service</name>
+	</JavaPlugin>
+	<JavaPlugin>
+		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.planner.PlanningConsultServiceVisualization</implementationClass>
 		<description>Planning consult service visualization</description>
 		<name>Planning consult to JSON Visualization</name>
@@ -95,11 +101,5 @@
 		<implementationClass>org.bimserver.demoplugins.service.GeometryInfoToExcelPlugin</implementationClass>
 		<description>Writes geometry information of all objects to Excel file</description>
 		<name>Geometry info to excel</name>
-	</JavaPlugin>
-	<JavaPlugin>
-		<interfaceClass>org.bimserver.plugins.serializers.SerializerPlugin</interfaceClass>
-		<implementationClass>org.bimserver.serializers.objectcsv.ObjectCSVSerializerPlugin</implementationClass>
-		<description>ObjectCSV serializer</description>
-		<name>Object CSV</name>
 	</JavaPlugin>
 </PluginDescriptor>
