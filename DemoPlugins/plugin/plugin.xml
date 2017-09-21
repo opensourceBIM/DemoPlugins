@@ -8,6 +8,12 @@
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
+		<implementationClass>org.bimserver.demoplugins.geometrysimplifier.GeometrySimplifier</implementationClass>
+		<description>GeometrySimplifier</description>
+		<name>GeometrySimplifier</name>
+	</JavaPlugin>
+	<JavaPlugin>
+		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.service.GuidFixerService</implementationClass>
 		<description>Service that fixes double GUIDS by generating new ones</description>
 		<name>Guid Fixer</name>

@@ -4,9 +4,9 @@ import org.bimserver.bimbots.BimBotsException;
 import org.bimserver.bimbots.BimBotsInput;
 import org.bimserver.bimbots.BimBotsOutput;
 import org.bimserver.emf.IfcModelInterface;
+import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcProduct;
-import org.bimserver.models.store.ObjectType;
 import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.BimBotAbstractService;
 
@@ -15,7 +15,7 @@ import com.google.common.base.Charsets;
 public class BimBotDemoService extends BimBotAbstractService {
 
 	@Override
-	public BimBotsOutput runBimBot(BimBotsInput input, ObjectType settings) throws BimBotsException {
+	public BimBotsOutput runBimBot(BimBotsInput input, SObjectType settings) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
 		
 		StringBuilder sb = new StringBuilder();
@@ -34,5 +34,10 @@ public class BimBotDemoService extends BimBotAbstractService {
 		output.setTitle("BimBotDemoService Results");
 		output.setContentType("text/plain");
 		return output;
+	}
+
+	@Override
+	public SchemaName getOutputSchema() {
+		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0;
 	}
 }
