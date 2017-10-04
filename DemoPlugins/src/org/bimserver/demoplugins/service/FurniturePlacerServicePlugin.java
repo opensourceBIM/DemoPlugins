@@ -22,40 +22,40 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.bimserver.emf.IdEObject;
 import org.bimserver.emf.IfcModelInterface;
+import org.bimserver.emf.IfcModelInterfaceException;
 import org.bimserver.emf.MetaDataManager;
 import org.bimserver.emf.OidProvider;
 import org.bimserver.ifc.Scaler;
-import org.bimserver.interfaces.objects.SActionState;
-import org.bimserver.interfaces.objects.SLongActionState;
 import org.bimserver.interfaces.objects.SObjectType;
-import org.bimserver.interfaces.objects.SProgressTopicType;
 import org.bimserver.interfaces.objects.SProject;
 import org.bimserver.interfaces.objects.SRevision;
 import org.bimserver.interfaces.objects.SService;
 import org.bimserver.models.ifc2x3tc1.Ifc2x3tc1Package;
+import org.bimserver.models.ifc2x3tc1.IfcArbitraryClosedProfileDef;
 import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement3D;
 import org.bimserver.models.ifc2x3tc1.IfcBuildingStorey;
 import org.bimserver.models.ifc2x3tc1.IfcCartesianPoint;
+import org.bimserver.models.ifc2x3tc1.IfcCurve;
+import org.bimserver.models.ifc2x3tc1.IfcExtrudedAreaSolid;
 import org.bimserver.models.ifc2x3tc1.IfcFurnishingElement;
 import org.bimserver.models.ifc2x3tc1.IfcLocalPlacement;
 import org.bimserver.models.ifc2x3tc1.IfcObjectDefinition;
 import org.bimserver.models.ifc2x3tc1.IfcOwnerHistory;
+import org.bimserver.models.ifc2x3tc1.IfcPolyline;
 import org.bimserver.models.ifc2x3tc1.IfcProductDefinitionShape;
+import org.bimserver.models.ifc2x3tc1.IfcProfileDef;
 import org.bimserver.models.ifc2x3tc1.IfcRelContainedInSpatialStructure;
 import org.bimserver.models.ifc2x3tc1.IfcRelDecomposes;
 import org.bimserver.models.ifc2x3tc1.IfcRelDefines;
 import org.bimserver.models.ifc2x3tc1.IfcRepresentation;
-import org.bimserver.models.ifc2x3tc1.IfcSIPrefix;
-import org.bimserver.models.ifc2x3tc1.IfcSIUnit;
-import org.bimserver.models.ifc2x3tc1.IfcSIUnitName;
+import org.bimserver.models.ifc2x3tc1.IfcRepresentationItem;
 import org.bimserver.models.ifc2x3tc1.IfcShapeRepresentation;
 import org.bimserver.models.ifc2x3tc1.IfcSpace;
-import org.bimserver.models.ifc2x3tc1.IfcUnitEnum;
 import org.bimserver.plugins.ModelHelper;
 import org.bimserver.plugins.deserializers.Deserializer;
 import org.bimserver.plugins.deserializers.DeserializerPlugin;
@@ -65,6 +65,8 @@ import org.bimserver.plugins.services.BimServerClientInterface;
 import org.bimserver.shared.GuidCompressor;
 import org.bimserver.utils.CollectionUtils;
 import org.bimserver.utils.DeserializerUtils;
+import org.bimserver.utils.IfcUtils;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,19 +87,12 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 			return;
 		}
 
-		Date startDate = new Date();
-		Long topicId = bimServerClientInterface.getRegistry().registerProgressOnRevisionTopic(SProgressTopicType.RUNNING_SERVICE, poid, roid, "Running Furniture Placer");
-		SLongActionState state = new SLongActionState();
-		state.setTitle("Furniture Placer");
-		state.setState(SActionState.STARTED);
-		state.setProgress(-1);
-		state.setStart(startDate);
-		bimServerClientInterface.getRegistry().updateProgressTopic(topicId, state);
+		runningService.updateProgress(0);
 		
 		SService service = bimServerClientInterface.getServiceInterface().getService(soid);
 		
 		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
-		final IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false);
+		final IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, true);
 		
 		DeserializerPlugin deserializerPlugin = getPluginContext().getDeserializerPlugin("org.bimserver.ifc.step.deserializer.Ifc2x3tc1StepDeserializerPlugin", true);
 		
@@ -111,25 +106,16 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 		resourceAsInputStream.close();
 		IfcModelInterface furnishingModel = DeserializerUtils.readFromBytes(deserializer, byteArrayOutputStream.toByteArray(), "picknicktable.ifc");
 
-		IfcSIPrefix prefix = IfcSIPrefix.NULL;
-		for (IfcSIUnit ifcUnit : model.getAllWithSubTypes(IfcSIUnit.class)) {
-			if (ifcUnit.getUnitType() == IfcUnitEnum.LENGTHUNIT && ifcUnit.getName() == IfcSIUnitName.METRE) {
-				prefix = ifcUnit.getPrefix();
-				break;
-			}
-		}
-		LOGGER.info("Length exponent: " + prefix);
+		float lengthUnitPrefix = IfcUtils.getLengthUnitPrefix(model);
+		
+		LOGGER.info("Length scalar: " + lengthUnitPrefix);
 		
 		IfcFurnishingElement picknick = (IfcFurnishingElement) furnishingModel.getByName(Ifc2x3tc1Package.eINSTANCE.getIfcFurnishingElement(), "Picknik Bank");
 		
-		if (prefix != IfcSIPrefix.NULL) {
-			if (prefix == IfcSIPrefix.MILLI) {
-				// Picknick model is in meter, target model in millis, so we have to convert the picknick model first
-				Scaler scaler = new Scaler(furnishingModel);
-				scaler.scale(1000f);
-			} else {
-				LOGGER.info("Unimplemented prefix: " + prefix);
-			}
+		if (lengthUnitPrefix != 1) {
+			// Picknick model is in meter, target model in millis, so we have to convert the picknick model first
+			Scaler scaler = new Scaler(furnishingModel);
+			scaler.scale(lengthUnitPrefix);
 		}
 
 		MetaDataManager metaDataManager = getPluginContext().getMetaDataManager();
@@ -138,10 +124,15 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 		modelHelper.setTargetModel(model);
 		modelHelper.setObjectFactory(model);
 		OidProvider oidProvider = new OidProvider() {
-			long c = model.getHighestOid() + 1;
 			@Override
 			public long newOid(EClass eClass) {
-				return c++;
+				try {
+					IdEObject object = model.create(eClass);
+					return object.getOid();
+				} catch (IfcModelInterfaceException e) {
+					e.printStackTrace();
+				}
+				return -1;
 			}
 		};
 		modelHelper.setOidProvider(oidProvider);
@@ -169,18 +160,55 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 			 ownerHistory = all.get(0);
 		}
 		int newFurniture = 0;
+		double spaceWidth = -1;
+		double spaceDepth = -1;
 		for (IfcBuildingStorey ifcBuildingStorey : model.getAll(IfcBuildingStorey.class)) {
 			for (IfcRelDecomposes ifcRelDecomposes : ifcBuildingStorey.getIsDecomposedBy()) {
 				for (IfcObjectDefinition ifcObjectDefinition : ifcRelDecomposes.getRelatedObjects()) {
 					if (ifcObjectDefinition instanceof IfcSpace) {
 						IfcSpace ifcSpace = (IfcSpace)ifcObjectDefinition;
 						
-						IfcFurnishingElement newFurnishing = model.create(IfcFurnishingElement.class, oidProvider);
+						EList<IfcRepresentation> representations = ifcSpace.getRepresentation().getRepresentations();
+						for (IfcRepresentation ifcRepresentation : representations) {
+							for (IfcRepresentationItem ifcRepresentationItem : ifcRepresentation.getItems()) {
+								if (ifcRepresentationItem instanceof IfcExtrudedAreaSolid) {
+									IfcProfileDef sweptArea = ((IfcExtrudedAreaSolid) ifcRepresentationItem).getSweptArea();
+									if (sweptArea instanceof IfcArbitraryClosedProfileDef) {
+										IfcCurve outerCurve = ((IfcArbitraryClosedProfileDef) sweptArea).getOuterCurve();
+										if (outerCurve instanceof IfcPolyline) {
+											double[] min = new double[]{Double.MAX_VALUE, Double.MAX_VALUE};
+											double[] max = new double[]{-Double.MAX_VALUE, -Double.MAX_VALUE};
+											EList<IfcCartesianPoint> points = ((IfcPolyline) outerCurve).getPoints();
+											for (IfcCartesianPoint ifcCartesianPoint : points) {
+												Double x = ifcCartesianPoint.getCoordinates().get(0);
+												Double y = ifcCartesianPoint.getCoordinates().get(1);
+												if (x > max[0]) {
+													max[0] = x;
+												}
+												if (x < min[0]) {
+													min[0] = x;
+												}
+												if (y > max[1]) {
+													max[1] = y;
+												}
+												if (y < min[1]) {
+													min[1] = y;
+												}
+											}
+											spaceWidth = max[0] - min[0];
+											spaceDepth = max[1] - max[1];
+										}
+									}
+								}
+							}
+						}
+						
+						IfcFurnishingElement newFurnishing = model.create(IfcFurnishingElement.class);
 						newFurnishing.setName("ADDED FURNITURE");
 						
 						newFurnishing.setGlobalId(GuidCompressor.getNewIfcGloballyUniqueId());
 						newFurnishing.setOwnerHistory(ownerHistory);
-						IfcProductDefinitionShape definitionShape = model.create(IfcProductDefinitionShape.class, oidProvider);
+						IfcProductDefinitionShape definitionShape = model.create(IfcProductDefinitionShape.class);
 						newFurnishing.setRepresentation(definitionShape);
 						
 						definitionShape.getRepresentations().add(boundingBox);
@@ -190,22 +218,28 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 							newFurnishing.getIsDefinedBy().add(ifcRelDefines);
 						}
 						
-						IfcLocalPlacement localPlacement = model.create(IfcLocalPlacement.class, oidProvider);
+						IfcLocalPlacement localPlacement = model.create(IfcLocalPlacement.class);
 						localPlacement.setPlacementRelTo(ifcSpace.getObjectPlacement());
-						IfcAxis2Placement3D axis2Placement3D = model.create(IfcAxis2Placement3D.class, oidProvider);
+						IfcAxis2Placement3D axis2Placement3D = model.create(IfcAxis2Placement3D.class);
 						localPlacement.setRelativePlacement(axis2Placement3D);
 						
-						IfcCartesianPoint pos = model.create(IfcCartesianPoint.class, oidProvider);
-						pos.getCoordinates().add(0d);
-						pos.getCoordinates().add(0d);
-						pos.getCoordinates().add(0d);
+						IfcCartesianPoint pos = model.create(IfcCartesianPoint.class);
+						if (spaceWidth == -1) {
+							pos.getCoordinates().add(0d);
+							pos.getCoordinates().add(0d);
+							pos.getCoordinates().add(0d);
+						} else {
+							pos.getCoordinates().add(-2 + -spaceWidth / 2);
+							pos.getCoordinates().add(1 + -spaceDepth / 2);
+							pos.getCoordinates().add(0d);
+						}
 						axis2Placement3D.setLocation(pos);
 						
 						if (ifcSpace.getContainsElements().size() > 0) {
 							IfcRelContainedInSpatialStructure rel = ifcSpace.getContainsElements().get(0);
 							rel.getRelatedElements().add(newFurnishing);
 						} else {
-							IfcRelContainedInSpatialStructure decomposes = model.create(IfcRelContainedInSpatialStructure.class, oidProvider);
+							IfcRelContainedInSpatialStructure decomposes = model.create(IfcRelContainedInSpatialStructure.class);
 							decomposes.setGlobalId(GuidCompressor.getNewIfcGloballyUniqueId());
 							decomposes.setOwnerHistory(ownerHistory);
 							decomposes.getRelatedElements().add(newFurnishing);
@@ -221,6 +255,8 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 		}
 		LOGGER.info("New furniture: " + newFurniture);
 
+		runningService.updateProgress(100);
+		
 		if (service.getWriteRevisionId() != -1 && service.getWriteRevisionId() != project.getOid()) {
 			model.checkin(service.getWriteRevisionId(), "Added furniture");
 		} else {
