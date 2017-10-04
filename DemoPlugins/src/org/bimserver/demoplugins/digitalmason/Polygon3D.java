@@ -1,14 +1,9 @@
-package org.bimserver.demoplugins.digitalMason;
+package org.bimserver.demoplugins.digitalmason;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Set;
 
-import org.bimserver.models.ifc2x3tc1.IfcObject;
 import org.bimserver.utils.math.Vector;
 
 public class Polygon3D {

@@ -1,8 +1,5 @@
 package org.bimserver.demoplugins.bresaer;
 
-import org.bimserver.demoplugins.bresaer.BresaerServicePlugin.Coordinate;
-import org.bimserver.demoplugins.bresaer.BresaerServicePlugin.PanelSize;
-import org.bimserver.demoplugins.bresaer.BresaerServicePlugin.PanelType;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcBuildingElementProxy;
 

@@ -1,4 +1,4 @@
-package org.bimserserver.demoplugins.polygonize;
+package org.bimserver.demoplugins.polygonize;
 
 import java.util.HashMap;
 import java.util.LinkedList;

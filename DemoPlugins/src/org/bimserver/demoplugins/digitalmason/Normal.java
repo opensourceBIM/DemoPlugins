@@ -1,4 +1,4 @@
-package org.bimserver.demoplugins.digitalMason;
+package org.bimserver.demoplugins.digitalmason;
 
 public class Normal {
 	public double x; // coordinates in 0.01 mm (input value float is in mm)

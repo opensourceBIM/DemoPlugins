@@ -1,9 +1,7 @@
-package org.bimserver.demoplugins.digitalMason;
+package org.bimserver.demoplugins.digitalmason;
 
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -16,14 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.bimserver.demoplugins.digitalMason.Corner3D;
-import org.bimserver.demoplugins.digitalMason.Edge3D;
-import org.bimserver.demoplugins.digitalMason.Layer;
-import org.bimserver.demoplugins.digitalMason.ModelGeometry;
-import org.bimserver.demoplugins.digitalMason.Normal;
-import org.bimserver.demoplugins.digitalMason.Plane;
-import org.bimserver.demoplugins.digitalMason.Polygon3D;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SActionState;
 import org.bimserver.interfaces.objects.SDeserializerPluginConfiguration;
@@ -32,10 +22,8 @@ import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.interfaces.objects.SProgressTopicType;
 import org.bimserver.interfaces.objects.SProject;
 import org.bimserver.interfaces.objects.SRevision;
-import org.bimserver.interfaces.objects.SService;
 import org.bimserver.models.geometry.GeometryData;
 import org.bimserver.models.geometry.GeometryInfo;
-import org.bimserver.models.geometry.Vector3f;
 import org.bimserver.models.ifc2x3tc1.IfcBoolean;
 import org.bimserver.models.ifc2x3tc1.IfcConversionBasedUnit;
 import org.bimserver.models.ifc2x3tc1.IfcNamedUnit;
@@ -54,8 +42,6 @@ import org.bimserver.models.ifc2x3tc1.IfcWall;
 import org.bimserver.models.ifc2x3tc1.Tristate;
 import org.bimserver.plugins.deserializers.Deserializer;
 import org.bimserver.plugins.deserializers.DeserializerPlugin;
-import org.bimserver.plugins.serializers.Serializer;
-import org.bimserver.plugins.serializers.SerializerPlugin;
 import org.bimserver.plugins.services.AbstractModifyRevisionService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 import org.bimserver.plugins.services.Flow;

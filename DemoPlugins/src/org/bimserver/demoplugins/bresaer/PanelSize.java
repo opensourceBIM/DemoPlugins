@@ -1,7 +1,5 @@
 package org.bimserver.demoplugins.bresaer;
 
-import org.bimserver.demoplugins.bresaer.BresaerServicePlugin.PanelSize;
-
 public class PanelSize {
 	public int width;
 	public int height;

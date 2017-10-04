@@ -3,7 +3,6 @@ package org.bimserver.demoplugins.outerareaunfoldingblanket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +23,6 @@ import org.bimserver.models.ifc2x3tc1.IfcSpace;
 import org.bimserver.plugins.services.AbstractAddExtendedDataService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 import org.bimserver.utils.IfcUtils;
-
 
 import com.google.common.base.Charsets;
 

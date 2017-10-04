@@ -1,7 +1,6 @@
 package org.bimserver.demoplugins.tect;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,7 +10,6 @@ import java.nio.file.Path;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SActionState;
 import org.bimserver.interfaces.objects.SDeserializerPluginConfiguration;
@@ -29,7 +27,6 @@ import org.bimserver.plugins.services.AbstractModifyRevisionService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 import org.bimserver.plugins.services.Flow;
 import org.bimserver.shared.exceptions.UserException;
-import org.bimserver.utils.DeserializerUtils;
 import org.bimserver.utils.Formatters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +76,7 @@ public class EnergyCalculationServicePlugin extends AbstractModifyRevisionServic
 		count++;
 		
 		Serializer serializer = serializerPlugin.createSerializer(null);
-		serializer.init(model, null, null, true);
+		serializer.init(model, null, true);
 		Path originalFile = getPluginContext().getRootPath().resolve("data").resolve(Name + ".ifc"); 
 		OutputStream resourceAsOutputStream = Files.newOutputStream(originalFile, java.nio.file.StandardOpenOption.CREATE);	
 		serializer.writeToOutputStream(resourceAsOutputStream, null);

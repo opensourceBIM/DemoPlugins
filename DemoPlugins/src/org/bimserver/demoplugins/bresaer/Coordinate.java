@@ -1,7 +1,5 @@
 package org.bimserver.demoplugins.bresaer;
 
-import org.bimserver.demoplugins.bresaer.BresaerServicePlugin.Coordinate;
-
 public class Coordinate {
 	public int[] v = new int[3]; 
 	

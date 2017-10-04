@@ -1,27 +1,19 @@
 package org.bimserver.demoplugins.bresaer;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
-import org.antlr.gunit.swingui.parsers.StGUnitParser.output_return;
 import org.bimserver.demoplugins.bresaer.Panel.PanelType;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.interfaces.objects.SProject;
-import org.bimserver.models.geometry.GeometryData;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcBuildingElementProxy;
-import org.bimserver.models.ifc2x3tc1.IfcElement;
 import org.bimserver.models.ifc2x3tc1.IfcOpeningElement;
-import org.bimserver.models.ifc2x3tc1.IfcProxy;
 import org.bimserver.plugins.services.AbstractAddExtendedDataService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 

@@ -1,4 +1,4 @@
-package org.bimserserver.demoplugins.polygonize;
+package org.bimserver.demoplugins.polygonize;
 
 public class Corner3D {
 	public int x; // coordinates in 0.01 mm (input value float is in mm)

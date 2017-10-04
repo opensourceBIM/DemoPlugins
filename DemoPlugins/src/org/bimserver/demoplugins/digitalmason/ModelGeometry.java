@@ -1,4 +1,4 @@
-package org.bimserver.demoplugins.digitalMason;
+package org.bimserver.demoplugins.digitalmason;
 
 import java.util.HashMap;
 import java.util.LinkedList;
