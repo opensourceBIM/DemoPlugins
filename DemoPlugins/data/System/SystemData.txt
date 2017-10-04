@@ -1,0 +1,12 @@
+System code	Description	Efficiency	Recirculation	Efficiency heat recovery	Csys.vent.med	cost/m2	cost	cost	maintenance cost
+Gen_H_1	Boiler	0.9						10	5
+Gen_H_2	Distrct heating	0.95							5
+Gen_C_1	Absorption cooler	0.9						10	7
+Gen_C_2	Mechanical compression cooler	3						20	10
+Emis_H_1	Floor heating	1					15		6
+Emis_H_2	Radiaters	0.98						5	7
+Emis_C_1	Floor cooling	1					15		6
+Emis_C_2	Fan coil system	0.98						7	7
+Vent_1	Mechanical exhaust and natural supply		0	0	0.33	2			1
+Vent_2	Mechanical supply and exhaust system 1		0.4	0.65	0.83	5			3
+Vent_3	Mechanical supply and exhaust system 2		0	0	0.83	3			2

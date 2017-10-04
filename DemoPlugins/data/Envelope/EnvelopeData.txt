@@ -1,0 +1,13 @@
+EeB System Code	Thermal Transmittance	Specific Heat capacity	Solar Energy Transmittance (g-value)	Solar Absorption Coefficient 	Initial costs (ex. VAT)	Building-related operating costs (ex. VAT)
+EeB_wl_01	0.8	330000	0	50	100	5
+EeB_wl_02	0.2	350000	0	75	125	6
+EeB_wl_03	0.1	370000	0	75	150	6
+EeB_gf_01	1	450000	0	0	120	3
+EeB_gf_02	0.25	460000	0	0	160	4
+EeB_gf_03	0.1	460000	0	0	200	5
+EeB_rf_01	0.76	400000	0	50	175	5
+EeB_rf_02	0.17	430000	0	80	200	5
+EeB_rf_03	0.1	450000	0	80	225	6
+EeB_wi_01	1.6	34000	50	0	285	13
+EeB_wi_02	1.1	34000	68	0	300	13
+EeB_wi_03	0.7	37000	68	0	390	16
