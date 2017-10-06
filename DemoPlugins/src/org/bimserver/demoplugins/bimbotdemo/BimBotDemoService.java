@@ -17,10 +17,10 @@ public class BimBotDemoService extends BimBotAbstractService {
 	@Override
 	public BimBotsOutput runBimBot(BimBotsInput input, SObjectType settings) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("Number of objects: " + model.size() + "\n");
-		
+
 		int totalPrimitives = 0;
 		for (IfcProduct ifcProduct : model.getAllWithSubTypes(IfcProduct.class)) {
 			GeometryInfo geometry = ifcProduct.getGeometry();
