@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.bimserver.bimbots.BimBotsException;
+import org.bimserver.bimbots.BimBotsInput;
+import org.bimserver.bimbots.BimBotsOutput;
 import org.bimserver.demoplugins.bresaer.Panel.PanelType;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SObjectType;
@@ -14,12 +17,16 @@ import org.bimserver.interfaces.objects.SProject;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcBuildingElementProxy;
 import org.bimserver.models.ifc2x3tc1.IfcOpeningElement;
+import org.bimserver.models.ifc2x3tc1.IfcProduct;
+import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.AbstractAddExtendedDataService;
+import org.bimserver.plugins.services.BimBotAbstractService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 
 import com.google.common.base.Charsets;
 
-public class BresaerServicePlugin extends AbstractAddExtendedDataService {
+public class BimBotBresaerService extends BimBotAbstractService {
+
 	private HashMap<Coordinate, List<Panel>>[] panelsAt = new HashMap[3];
 	private List<Panel>                        unpositionedPanels;
 	private EnumMap<Panel.PanelType, HashMap<PanelSize, Integer>> nrOfPanelsByTypeAndSize;
@@ -28,13 +35,18 @@ public class BresaerServicePlugin extends AbstractAddExtendedDataService {
 	private HashMap<PanelSize, Integer> nrOfSolarPanels = new HashMap<PanelSize, Integer>();	
 	private HashMap<PanelSize, Integer> nrOfEurecatPanels = new HashMap<PanelSize, Integer>();	
 	private HashMap<PanelSize, Integer> nrOfUnknownPanels = new HashMap<PanelSize, Integer>();	
-
 	
-	public BresaerServicePlugin() {
-		super("BRESAER_OUTPUT");
-		// TODO Auto-generated constructor stub
-	}
-
+	private final int PVThickness        =  6000;
+	private final int UlmaThickness      = 30200;
+	private final int StamThickness      = 29200;
+	private final int SolarWallThickness = 29600;
+	private final int EurecatThickness   = 54600;
+	
+	private final int[] UlmaOffset = { 40, 40, 50, 20};
+	private final int[] StamOffset = { 40, 40, 50, 20};
+	private final int[] SolarWallOffset = { 40, 40, 50, 20};
+	private final int[] EurecatOffset = { 40, 40, 50, 20};
+	
 		
 	private void AddPanelToList(HashMap<Coordinate, List<Panel>> map, Coordinate coor, Panel panel) {
 		List<Panel> panels;
@@ -365,30 +377,29 @@ public class BresaerServicePlugin extends AbstractAddExtendedDataService {
 		
 		return output;		
 	}
-	
 
 	
-	
-
 	@Override
-	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid,
-			long roid, String userToken, long soid, SObjectType settings) throws Exception {
-		
-		//Get the bimModel to count panels of 
-		SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
-		IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false, true);
-		
-
+	public BimBotsOutput runBimBot(BimBotsInput input, SObjectType settings) throws BimBotsException {
+		IfcModelInterface model = input.getIfcModel();
 		for (int i = 0; i < 3; i++)
 			panelsAt[i] = new HashMap<Coordinate, List<Panel>>();
 		
-	
 		GetPanelFromBIM(model);
-		String output = WriteParts();
+		String outputString = WriteParts();
 		
 		GetIntersections(model);
 
-		addExtendedData(output.getBytes(Charsets.UTF_8), "MaterialListing.txt", "Materials used for Bresaer envelope", "text/plain", bimServerClientInterface, roid);
+		BimBotsOutput output = new BimBotsOutput(SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0, outputString.getBytes(Charsets.UTF_8));
+		output.setTitle("Materials used for Bresaer envelope");
+		output.setContentType("text/plain");		
+		return output;
+	}
+	
+
+	@Override
+	public SchemaName getOutputSchema() {
+		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0;
 	}
 }
 
