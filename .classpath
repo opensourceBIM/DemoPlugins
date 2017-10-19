@@ -3,5 +3,15 @@
 	<classpathentry excluding="org/bimserver/demoplugins/service/planner/" kind="src" path="DemoPlugins/src"/>
 	<classpathentry kind="src" path="DemoPlugins/src/org/bimserver/demoplugins/service/planner"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/PluginBase"/>
+	<classpathentry kind="lib" path="C:/Users/helmpwvd/.m2/repository/com/google/guava/guava/19.0/guava-19.0.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="com.google.guava"/>
+			<attribute name="maven.artifactId" value="guava"/>
+			<attribute name="maven.version" value="19.0"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

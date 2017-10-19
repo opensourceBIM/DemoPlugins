@@ -8,6 +8,12 @@
 	</JavaPlugin>
 	<JavaPlugin>
 		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
+		<implementationClass>org.bimserver.demoplugins.spacearea.SpaceAreaService</implementationClass>
+		<description>Generates a list of spaces with their classifications and areas</description>
+		<name>SpaceAreaService</name>
+	</JavaPlugin>
+	<JavaPlugin>
+		<interfaceClass>org.bimserver.plugins.services.ServicePlugin</interfaceClass>
 		<implementationClass>org.bimserver.demoplugins.geometrysimplifier.GeometrySimplifier</implementationClass>
 		<description>GeometrySimplifier</description>
 		<name>GeometrySimplifier</name>

@@ -1,4 +1,4 @@
-package org.bimserserver.demoplugins.polygonize;
+package org.bimserver.demoplugins.polygonize;
 
 public class Normal {
 	public double x; // coordinates in 0.01 mm (input value float is in mm)
