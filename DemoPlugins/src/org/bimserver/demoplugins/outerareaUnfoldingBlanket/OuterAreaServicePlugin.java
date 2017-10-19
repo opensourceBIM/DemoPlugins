@@ -1,4 +1,4 @@
-package org.bimserver.demoplugins.outerareaunfoldingblanket;
+package org.bimserver.demoplugins.outerareaUnfoldingBlanket;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
