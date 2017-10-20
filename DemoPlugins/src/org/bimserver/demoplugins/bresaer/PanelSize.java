@@ -22,9 +22,9 @@ public class PanelSize {
 		
 	@Override 
 	public int hashCode() {
-        int result = 17; 
-        result = 31 * result + Integer.hashCode(width);
-        result = 31 * result + Integer.hashCode(height);
+        int result = 19; 
+        result = 67 * result + Integer.hashCode(width);
+        result = 67 * result + Integer.hashCode(height);
         return result;
 	}		
 }

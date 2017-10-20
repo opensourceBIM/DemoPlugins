@@ -27,7 +27,8 @@ import com.google.common.base.Charsets;
 
 public class BimBotBresaerService extends BimBotAbstractService {
 
-	private HashMap<Coordinate, List<Panel>>[] panelsAt = new HashMap[3];
+	private HashMap<Plane, HashMap<Coordinate, List<Panel>>> panelsAtPlane  = new HashMap<Plane, HashMap<Coordinate, List<Panel>>>();
+//	private HashMap<Plane, List<Panel>>[] panelsAt = new HashMap[3];
 	private List<Panel>                        unpositionedPanels;
 	private EnumMap<Panel.PanelType, HashMap<PanelSize, Integer>> nrOfPanelsByTypeAndSize;
 	private HashMap<PanelSize, Integer> nrOfUlmaPanels = new HashMap<PanelSize, Integer>();		
@@ -36,32 +37,21 @@ public class BimBotBresaerService extends BimBotAbstractService {
 	private HashMap<PanelSize, Integer> nrOfEurecatPanels = new HashMap<PanelSize, Integer>();	
 	private HashMap<PanelSize, Integer> nrOfUnknownPanels = new HashMap<PanelSize, Integer>();	
 	
-	private final int PVThickness        =  6000;
-	private final int UlmaThickness      = 30200;
-	private final int StamThickness      = 29200;
-	private final int SolarWallThickness = 29600;
-	private final int EurecatThickness   = 54600;
 	
-	private final int[] UlmaOffset = { 40, 40, 50, 20};
-	private final int[] StamOffset = { 40, 40, 50, 20};
-	private final int[] SolarWallOffset = { 40, 40, 50, 20};
-	private final int[] EurecatOffset = { 40, 40, 50, 20};
 	
-		
-	private void AddPanelToList(HashMap<Coordinate, List<Panel>> map, Coordinate coor, Panel panel) {
+	private void AddPanelToList(HashMap<Coordinate, List<Panel>> panelsAtPos, Coordinate coor, Panel panel) {			
 		List<Panel> panels;
-		if (!map.containsKey(coor))	{
+		if (!panelsAtPos.containsKey(coor))	{
 			panels = new ArrayList<Panel>();
-			map.put(coor, panels);
+			panelsAtPos.put(coor, panels);
 		}
 		else
-			panels = map.get(coor);
-		
+			panels = panelsAtPos.get(coor);	
 		panels.add(panel);
 	}			
 		
 	
-	private void GetPanelFromBIM(IfcModelInterface model)	{
+	private void GetPanelsFromBIM(IfcModelInterface model)	{
 			
 		// Panels are stored as IfcBuildingElementProxy, so get all of them and loop through them for analysing each panel
 		List<IfcBuildingElementProxy> allWithSubTypes = model.getAllWithSubTypes(IfcBuildingElementProxy.class);
@@ -72,21 +62,38 @@ public class BimBotBresaerService extends BimBotAbstractService {
 						
 			//create a listing of the panels based on each corner => a list contains neighbouring panel
 			Panel curPanel = new Panel(ifcProxy);
-			AddPanelToList(panelsAt[curPanel.normal], curPanel.min, curPanel);
-			if (curPanel.normal == 0) {
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.min.v[0], curPanel.min.v[1], curPanel.max.v[2]), curPanel);
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.min.v[0], curPanel.max.v[1], curPanel.min.v[2]), curPanel);
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.min.v[0], curPanel.max.v[1], curPanel.max.v[2]), curPanel);
-			}	
-			else if (curPanel.normal == 1) {
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.min.v[0], curPanel.min.v[1], curPanel.max.v[2]), curPanel);
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.max.v[0], curPanel.min.v[1], curPanel.min.v[2]), curPanel);
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.max.v[0], curPanel.min.v[1], curPanel.max.v[2]), curPanel);
+			Coordinate[] coor = new Coordinate[2];
+			coor[0] = new Coordinate(curPanel.positiveNormal ? curPanel.min : curPanel.max);
+			coor[1] = new Coordinate(curPanel.positiveNormal ? curPanel.min : curPanel.max);
+			
+			// Create a plane object for the current plane, with the origin depening on the normals direction +/-
+			Plane plane = new Plane(curPanel.normalAxis, coor[0]); 
+
+			// Find listing of the panels for the current plane
+			HashMap<Coordinate, List<Panel>> panelsAtPos;	
+			if (!panelsAtPlane.containsKey(plane)) {
+				panelsAtPos  = new HashMap<Coordinate, List<Panel>>();
+				panelsAtPlane.put(plane, panelsAtPos);
 			}
-			else if (curPanel.normal == 2) {
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.min.v[0], curPanel.max.v[1], curPanel.min.v[2]), curPanel);
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.max.v[0], curPanel.min.v[1], curPanel.min.v[2]), curPanel);
-				AddPanelToList(panelsAt[curPanel.normal], new Coordinate(curPanel.max.v[0], curPanel.max.v[1], curPanel.min.v[2]), curPanel);				
+			else
+				panelsAtPos = panelsAtPlane.get(plane);			
+			
+			boolean first = true;
+			for (int i = 0; i < 2; i++)	{
+				if (i != curPanel.normalAxis) {
+					if (first)	{
+						coor[0].v[i] = curPanel.min.v[i];
+						coor[1].v[i] = curPanel.max.v[i];
+					}
+					else {
+						coor[0] = new Coordinate(coor[0]);
+						coor[1] = new Coordinate(coor[1]);
+						coor[0].v[i] = curPanel.positiveNormal ? curPanel.max.v[i] : curPanel.min.v[i];
+						coor[1].v[i] = curPanel.positiveNormal ? curPanel.max.v[i] : curPanel.min.v[i];
+					}				
+					AddPanelToList(panelsAtPos, coor[0], curPanel);
+					AddPanelToList(panelsAtPos, coor[1], curPanel);
+				}
 			}
 			
 			switch (curPanel.type) {
@@ -165,56 +172,44 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		double totalEurecatSurface = 0.0;		
 	
 		String output = "";		
-		int widthDir[] = { 1, 0, 0};
-		int heightDir[] = { 2, 2, 1};
 		
 		// count nr of Aluskit vertical profiles with length X
-		for (int i = 0; i < 2; i++)	{		
+		for (HashMap<Coordinate, List<Panel>> panelsAt : panelsAtPlane.values()) {		
 			HashMap<Integer, LinkedList<Integer>> lengthAt = new HashMap<Integer, LinkedList<Integer>>();
-			for (Entry<Coordinate,List<Panel>> entry : panelsAt[i].entrySet()) {
+			for (Entry<Coordinate,List<Panel>> entry : panelsAt.entrySet()) {
 				for (Panel panel : entry.getValue()) {
 					LinkedList<Integer> fromTo; //even is start, odd is end of fillings with a panel
 					
 					//new y position add the panel height
-					if (!lengthAt.containsKey(entry.getKey().v[widthDir[i]])) {
+					if (!lengthAt.containsKey(entry.getKey().v[panel.widthAxis()])) {
 						fromTo = new LinkedList<Integer>();
-						lengthAt.put(entry.getKey().v[widthDir[i]], fromTo);
-						fromTo.add(panel.min.v[heightDir[i]]);
-						fromTo.add(panel.max.v[heightDir[i]]);
-//						output += entry.getKey().v[widthDir[i]] + " : new " + panel.min.v[2]/1000 + "->" + panel.max.v[2]/1000 + "\n";  
+						lengthAt.put(entry.getKey().v[panel.widthAxis()], fromTo);
+						fromTo.add(panel.min.v[panel.upAxis]);
+						fromTo.add(panel.max.v[panel.upAxis]);
 						break;
 					}
-	
 					//existing y position find connecting panel height
-//					output += entry.getKey().v[widthDir[i]] + " : ";
-					fromTo = lengthAt.get(entry.getKey().v[widthDir[i]]);
-//					for (int n = 0; n < (fromTo.size() - 1); n += 2)
-//						output += fromTo.get(n)/1000 + "->" + fromTo.get(n + 1)/1000 + ", ";  
-
-//					output += "+" + panel.min.v[2]/1000 + "->" + panel.max.v[2]/1000 + " = ";  
+					else
+						fromTo = lengthAt.get(entry.getKey().v[panel.widthAxis()]);
 
 					//search the index above the current panel.min.z
 					int index;
-					for (index = 0;  index < fromTo.size() && fromTo.get(index) < panel.min.v[2]; index++);
+					for (index = 0;  index < fromTo.size() && fromTo.get(index) < panel.min.v[panel.upAxis]; index++);
 	
 					//insert if index is even and shift to the next index
 					if ((index & 1) == 0) { //even
-						fromTo.add(index, panel.min.v[2]);
+						fromTo.add(index, panel.min.v[panel.upAxis]);
 						index++;
 					}
 					
 					//remove all points till the end or the index points to a point larger or equal to panel.max.z 
-					while (index < fromTo.size() && fromTo.get(index) <= panel.max.v[2]) {
+					while (index < fromTo.size() && fromTo.get(index) <= panel.max.v[panel.upAxis]) {
 						fromTo.remove(index);
 					}
 					
 					//add the max of the panel if an uneven nr of points is in the list
 					if ((fromTo.size() & 1) == 1)
-						fromTo.add(index, panel.max.v[2]);				
-
-//					for (int n = 0; n < (fromTo.size() - 1); n += 2)
-//						output += fromTo.get(n)/1000 + "->" + fromTo.get(n + 1)/1000 + ", ";
-//					output += "\n"; 
+						fromTo.add(index, panel.max.v[panel.upAxis]);				
 				}
 			}	
 			
@@ -382,10 +377,8 @@ public class BimBotBresaerService extends BimBotAbstractService {
 	@Override
 	public BimBotsOutput runBimBot(BimBotsInput input, SObjectType settings) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
-		for (int i = 0; i < 3; i++)
-			panelsAt[i] = new HashMap<Coordinate, List<Panel>>();
 		
-		GetPanelFromBIM(model);
+		GetPanelsFromBIM(model);
 		String outputString = WriteParts();
 		
 		GetIntersections(model);

@@ -15,6 +15,12 @@ public class Coordinate {
 		v[2] = _z; // in 0.01 mm
 	}		
 	
+	public Coordinate(Coordinate coor) {
+		v[0] = coor.v[0]; // in 0.01 mm 
+		v[1] = coor.v[1]; // in 0.01 mm
+		v[2] = coor.v[2]; // in 0.01 mm
+	}	
+	
 	@Override 
 	public boolean equals(Object o) {
 		if (o == this) return true;
