@@ -1,5 +1,7 @@
 package org.bimserver.demoplugins.bimbotdemo;
 
+import java.util.List;
+
 import org.bimserver.bimbots.BimBotsException;
 import org.bimserver.bimbots.BimBotsInput;
 import org.bimserver.bimbots.BimBotsOutput;
@@ -22,7 +24,9 @@ public class BimBotDemoService extends BimBotAbstractService {
 		sb.append("Number of objects: " + model.size() + "\n");
 
 		int totalPrimitives = 0;
-		for (IfcProduct ifcProduct : model.getAllWithSubTypes(IfcProduct.class)) {
+		List<IfcProduct> products = model.getAllWithSubTypes(IfcProduct.class);
+		sb.append("Number of products: " + products.size() + "\n");
+		for (IfcProduct ifcProduct : products) {
 			GeometryInfo geometry = ifcProduct.getGeometry();
 			if (geometry != null) {
 				totalPrimitives += geometry.getPrimitiveCount();
