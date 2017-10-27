@@ -45,6 +45,7 @@ public class Panel {
 	public boolean    positiveNormal; // => use min value when true else max value
 	public int        upAxis;
 	public String 	  id;
+	public boolean    coversOpening;
 	
 
 	public int widthAxis() {
@@ -74,13 +75,16 @@ public class Panel {
 	
 	public Panel(IfcBuildingElementProxy proxy) {
 		
+		int[] offset;
+		
 		switch (proxy.getObjectType()) {
 		 // ULMA
 		case "Ulma_frame_with_PV":
 			hasPV = true;
 		case "Ulma_frame":
 			type = PanelType.ULMA;
-			thickness = PanelThickness + (hasPV ? PVThickness : 0);  
+			thickness = PanelThickness + (hasPV ? PVThickness : 0);
+			offset = UlmaOffset;
 			break;
 			
 		// STAM	
@@ -89,28 +93,33 @@ public class Panel {
 		case "Stam_frame":
 			type = PanelType.STAM;
 			thickness = PanelThickness + (hasPV ? PVThickness : 0);  
+			offset = StamOffset;
 			break;
 			
 		// SolarWall	
 		case "SolarWall_frame":
 			type = PanelType.SOLARWALL;
 			thickness = PanelThickness + (hasPV ? PVThickness : 0);  
+			offset = SolarWallOffset;
 			break;
 			
 		// Eurecat	
 		case "Eurecat_blind_and_window_full":
 			isOpening = true;
 			type = PanelType.EURECAT;
-			thickness = EurecatThickness;  
+			thickness = EurecatThickness; 
+			offset = EurecatOffset;
 			break;	
 
 		// Unknown	
 		default:
 			type = PanelType.UNKNOWN;
+			offset  = new int[]{0, 0, 0, 0};
 			break;
 		}
 
 		id = proxy.getGlobalId();
+		coversOpening = false;
 		normalAxis = -1;
 		upAxis = -1;		
 		
@@ -131,7 +140,7 @@ public class Panel {
 				
 				if (dxyz[0] == EurecatThickness) {
 					normalAxis = 0;
-					size = new PanelSize(dxyz[1],dxyz[2]);
+					size = new PanelSize(dxyz[1], dxyz[2]);
 				}
 				else { // if (dxyz[1] == EurecatThickness)
 					normalAxis = 1;
@@ -196,11 +205,11 @@ public class Panel {
 									// this axis is pointing from one aluskit vertical profile to another (up is the remaining direction)
 									if (getLength(corn[(n + j) % 3], corn[(n+2)%3], triAxis) == dxyz[triAxis] - 8000) { 
 										upAxis = 3  - normalAxis - triAxis;
-										size = new PanelSize(dxyz[triAxis], dxyz[3  - normalAxis - triAxis]);
+										size = new PanelSize(dxyz[triAxis] - offset[0] - offset[1], dxyz[3  - normalAxis - triAxis] - offset[2] - offset[3]);
 									}
 									else {
 										upAxis = triAxis;
-										size = new PanelSize(dxyz[3  - normalAxis - triAxis], dxyz[triAxis]);
+										size = new PanelSize(dxyz[3  - normalAxis - triAxis] - offset[0] - offset[1], dxyz[triAxis] - offset[2] - offset[3]);
 									}
 									break;
 								}
@@ -208,7 +217,12 @@ public class Panel {
 							break;
 						}
 					}
-				}			
+				}
+				
+				min.v[upAxis] += offset[0];
+				max.v[upAxis] -= offset[1];
+				min.v[widthAxis()] += offset[3];
+				max.v[widthAxis()] -= offset[2];
 			}
 		}		
 	}

@@ -3,6 +3,7 @@ package org.bimserver.demoplugins.bresaer;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,23 +14,20 @@ import org.bimserver.bimbots.BimBotsOutput;
 import org.bimserver.demoplugins.bresaer.Panel.PanelType;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SObjectType;
-import org.bimserver.interfaces.objects.SProject;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcBuildingElementProxy;
 import org.bimserver.models.ifc2x3tc1.IfcOpeningElement;
-import org.bimserver.models.ifc2x3tc1.IfcProduct;
 import org.bimserver.plugins.SchemaName;
-import org.bimserver.plugins.services.AbstractAddExtendedDataService;
 import org.bimserver.plugins.services.BimBotAbstractService;
-import org.bimserver.plugins.services.BimServerClientInterface;
 
 import com.google.common.base.Charsets;
 
 public class BimBotBresaerService extends BimBotAbstractService {
 
-	private HashMap<Plane, HashMap<Coordinate, List<Panel>>> panelsAtPlane  = new HashMap<Plane, HashMap<Coordinate, List<Panel>>>();
+	private HashMap<Plane, HashMap<Coordinate, List<Panel>>> panelsByPlaneAndPosition  = new HashMap<Plane, HashMap<Coordinate, List<Panel>>>();
+	private HashMap<Plane, HashSet<Panel>>     panelsByPlane  = new HashMap<Plane, HashSet<Panel>>();
 //	private HashMap<Plane, List<Panel>>[] panelsAt = new HashMap[3];
-	private List<Panel>                        unpositionedPanels;
+	private List<Panel>                        EurecatPanels;
 	private EnumMap<Panel.PanelType, HashMap<PanelSize, Integer>> nrOfPanelsByTypeAndSize;
 	private HashMap<PanelSize, Integer> nrOfUlmaPanels = new HashMap<PanelSize, Integer>();		
 	private HashMap<PanelSize, Integer> nrOfStamPanels = new HashMap<PanelSize, Integer>();
@@ -62,40 +60,6 @@ public class BimBotBresaerService extends BimBotAbstractService {
 						
 			//create a listing of the panels based on each corner => a list contains neighbouring panel
 			Panel curPanel = new Panel(ifcProxy);
-			Coordinate[] coor = new Coordinate[2];
-			coor[0] = new Coordinate(curPanel.positiveNormal ? curPanel.min : curPanel.max);
-			coor[1] = new Coordinate(curPanel.positiveNormal ? curPanel.min : curPanel.max);
-			
-			// Create a plane object for the current plane, with the origin depening on the normals direction +/-
-			Plane plane = new Plane(curPanel.normalAxis, coor[0]); 
-
-			// Find listing of the panels for the current plane
-			HashMap<Coordinate, List<Panel>> panelsAtPos;	
-			if (!panelsAtPlane.containsKey(plane)) {
-				panelsAtPos  = new HashMap<Coordinate, List<Panel>>();
-				panelsAtPlane.put(plane, panelsAtPos);
-			}
-			else
-				panelsAtPos = panelsAtPlane.get(plane);			
-			
-			boolean first = true;
-			for (int i = 0; i < 2; i++)	{
-				if (i != curPanel.normalAxis) {
-					if (first)	{
-						coor[0].v[i] = curPanel.min.v[i];
-						coor[1].v[i] = curPanel.max.v[i];
-					}
-					else {
-						coor[0] = new Coordinate(coor[0]);
-						coor[1] = new Coordinate(coor[1]);
-						coor[0].v[i] = curPanel.positiveNormal ? curPanel.max.v[i] : curPanel.min.v[i];
-						coor[1].v[i] = curPanel.positiveNormal ? curPanel.max.v[i] : curPanel.min.v[i];
-					}				
-					AddPanelToList(panelsAtPos, coor[0], curPanel);
-					AddPanelToList(panelsAtPos, coor[1], curPanel);
-				}
-			}
-			
 			switch (curPanel.type) {
 			case ULMA: 
 				nrOfUlmaPanels.put(curPanel.size, nrOfUlmaPanels.containsKey(curPanel.size) ? nrOfUlmaPanels.get(curPanel.size) + 1 : 1);
@@ -111,7 +75,46 @@ public class BimBotBresaerService extends BimBotAbstractService {
 				break;
 			default:
 				nrOfUnknownPanels.put(curPanel.size, nrOfUlmaPanels.containsKey(curPanel.size) ? nrOfUlmaPanels.get(curPanel.size) + 1 : 1);
+			}			
+			
+			if (curPanel.type == PanelType.EURECAT) 
+				continue;
+			
+			Coordinate[] coor = new Coordinate[2];
+			coor[0] = new Coordinate(curPanel.positiveNormal ? curPanel.min : curPanel.max);
+			coor[1] = new Coordinate(curPanel.positiveNormal ? curPanel.min : curPanel.max);
+			
+			// Create a plane object for the current plane, with the origin depening on the normals direction +/-
+			Plane plane = new Plane(curPanel.normalAxis, coor[0]); 
+
+			// Find listing of the panels for the current plane
+			HashMap<Coordinate, List<Panel>> panelsByPosition;	
+			if (!panelsByPlaneAndPosition.containsKey(plane)) {
+				panelsByPosition  = new HashMap<Coordinate, List<Panel>>();
+				panelsByPlaneAndPosition.put(plane, panelsByPosition);
+				panelsByPlane.put(plane, new HashSet<Panel>());
 			}
+			else
+				panelsByPosition = panelsByPlaneAndPosition.get(plane);			
+			
+			boolean first = true;
+			for (int i = 0; i < 2; i++)	{
+				if (i != curPanel.normalAxis) {
+					if (first)	{
+						coor[0].v[i] = curPanel.min.v[i];
+						coor[1].v[i] = curPanel.max.v[i];
+					}
+					else {
+						coor[0] = new Coordinate(coor[0]);
+						coor[1] = new Coordinate(coor[1]);
+						coor[0].v[i] = curPanel.positiveNormal ? curPanel.max.v[i] : curPanel.min.v[i];
+						coor[1].v[i] = curPanel.positiveNormal ? curPanel.max.v[i] : curPanel.min.v[i];
+					}				
+					AddPanelToList(panelsByPosition, coor[0], curPanel);
+					AddPanelToList(panelsByPosition, coor[1], curPanel);
+				}
+			}
+			panelsByPlane.get(plane).add(curPanel);
 		}
 	}
 	
@@ -134,6 +137,30 @@ public class BimBotBresaerService extends BimBotAbstractService {
 				max  = new Coordinate(gInfo.getMaxBounds().getX(), 
 						   			  gInfo.getMaxBounds().getY(),
 						   			  gInfo.getMaxBounds().getZ());
+
+				// find the matching plane by checking each plane
+				for (HashSet<Panel> panels : panelsByPlane.values()) {
+					
+					// get a panel from the list to have the corresponding axis definition
+					Panel refPanel = panels.iterator().next();
+					
+					if ((refPanel.positiveNormal && min.v[refPanel.normalAxis] <= refPanel.min.v[refPanel.normalAxis] && 
+							                     max.v[refPanel.normalAxis] >= refPanel.min.v[refPanel.normalAxis]) || 
+						(!refPanel.positiveNormal && min.v[refPanel.normalAxis] <= refPanel.max.v[refPanel.normalAxis] && 
+		                                          max.v[refPanel.normalAxis] >= refPanel.max.v[refPanel.normalAxis])) {
+						// the current plane interferes with the current opening
+						for (Panel panel : panels) {
+							if (panel.min.v[panel.widthAxis()] < max.v[panel.widthAxis()] && 
+							    panel.max.v[panel.widthAxis()] > min.v[panel.widthAxis()] &&
+								panel.min.v[panel.upAxis] >= max.v[panel.upAxis] &&
+								panel.max.v[panel.upAxis] <= min.v[panel.upAxis]) {
+								panel.coversOpening = true;
+							}
+						}
+						break;
+					}
+				}
+				
 			}
 		}
 	}	
@@ -174,7 +201,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		String output = "";		
 		
 		// count nr of Aluskit vertical profiles with length X
-		for (HashMap<Coordinate, List<Panel>> panelsAt : panelsAtPlane.values()) {		
+		for (HashMap<Coordinate, List<Panel>> panelsAt : panelsByPlaneAndPosition.values()) {		
 			HashMap<Integer, LinkedList<Integer>> lengthAt = new HashMap<Integer, LinkedList<Integer>>();
 			for (Entry<Coordinate,List<Panel>> entry : panelsAt.entrySet()) {
 				for (Panel panel : entry.getValue()) {
@@ -227,13 +254,14 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		
 		// ulma panel numbers	
 		// get the connectors for ulma one per coordinate used by ulma panels
-		for (int i = 0; i < 2; i++)	{
-			for (Entry<Coordinate,List<Panel>> entry : panelsAt[i].entrySet()) {
+//		for (int i = 0; i < 2; i++)	{
+		for (HashMap<Coordinate, List<Panel>> panelsAt : panelsByPlaneAndPosition.values()) {			
+			for (Entry<Coordinate,List<Panel>> entry : panelsAt.entrySet()) {
 				boolean foundUlma = false;
 				for (Panel panel : entry.getValue()) {
 					if (panel.type == PanelType.ULMA) {
 						foundUlma = true;
-						if (entry.getKey().v[i ^ 1] == panel.min.v[i ^ 1]) {
+						if (entry.getKey().v[panel.widthAxis()] == panel.min.v[panel.widthAxis()]) {
 							nrOfUlmaHorizRail.put(panel.size.width, nrOfUlmaHorizRail.containsKey(panel.size.width) ? nrOfUlmaHorizRail.get(panel.size.width) + 1 : 1);
 							break;
 						}
@@ -252,10 +280,10 @@ public class BimBotBresaerService extends BimBotAbstractService {
 
 		// stam panel numbers	
 		// get the connectors for stam one per left side (minimum X or Y value) coordinate used by STAM panels
-		for (int i = 0; i < 2; i++)	{
-			for (Entry<Coordinate,List<Panel>> entry : panelsAt[0].entrySet()) {
+		for (HashMap<Coordinate, List<Panel>> panelsAt : panelsByPlaneAndPosition.values()) {			
+			for (Entry<Coordinate,List<Panel>> entry : panelsAt.entrySet()) {
 				for (Panel panel : entry.getValue()) {
-					if (panel.type == PanelType.STAM && entry.getKey().v[i ^ 1] == panel.min.v[i ^ 1]) {
+					if (panel.type == PanelType.STAM && entry.getKey().v[panel.widthAxis()] == panel.min.v[panel.widthAxis()]) {
 						Integer width = panel.size.width - 8000; 
 						nrOfHorizAluskitProfiles.put(width, nrOfHorizAluskitProfiles.containsKey(width) ? nrOfHorizAluskitProfiles.get(width) + 1 : 1);
 						nrOfStamAnchors.put(panel.size.width, nrOfStamAnchors.containsKey(panel.size.width) ? nrOfStamAnchors.get(panel.size.width) + 1 : 1);
@@ -276,10 +304,10 @@ public class BimBotBresaerService extends BimBotAbstractService {
 
 		// solarwall panel numbers	
 		// get the connectors for ulma one per coordinate used by ulma panels
-		for (int i = 0; i < 2; i++)	{
-			for (Entry<Coordinate,List<Panel>> entry : panelsAt[0].entrySet()) {
+		for (HashMap<Coordinate, List<Panel>> panelsAt : panelsByPlaneAndPosition.values()) {			
+			for (Entry<Coordinate,List<Panel>> entry : panelsAt.entrySet()) {
 				for (Panel panel : entry.getValue()) {
-					if (panel.type == PanelType.STAM && entry.getKey().v[i ^ 1] == panel.min.v[i ^ 1]) {
+					if (panel.type == PanelType.STAM && entry.getKey().v[panel.widthAxis()] == panel.min.v[panel.widthAxis()]) {
 						nrOfOmegaProfiles.put(panel.size.width, nrOfOmegaProfiles.containsKey(panel.size.width) ? nrOfOmegaProfiles.get(panel.size.width) + 1 : 1);
 						nrOfM8HammerBolts += 8;
 						nrOfNuts += 8;
