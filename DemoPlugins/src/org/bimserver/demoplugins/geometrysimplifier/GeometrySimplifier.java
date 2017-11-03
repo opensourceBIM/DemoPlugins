@@ -144,7 +144,7 @@ public class GeometrySimplifier extends BimBotAbstractService  {
 		return output;
 	}
 	
-	public String getOutputSchema() {
-		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0.name();
+	public SchemaName getOutputSchema() {
+		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0;
 	}
 }
