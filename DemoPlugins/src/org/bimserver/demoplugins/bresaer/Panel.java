@@ -1,10 +1,11 @@
 package org.bimserver.demoplugins.bresaer;
 
+import java.io.Console;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
+import java.util.HashMap;
 
 import org.bimserver.demoplugins.bresaer.Plane;
 import org.bimserver.models.geometry.GeometryData;
@@ -58,18 +59,29 @@ public class Panel {
 	}
 	
 	private int AxisId(Coordinate corn1, Coordinate corn2) {
-		int axis = (corn2.v[0] - corn1.v[0]) == 0 ? 0 : 1 +
-				   (corn2.v[1] - corn1.v[1]) == 0 ? 0 : 2 +
-				   (corn2.v[2] - corn1.v[2]) == 0 ? 0 : 4;
+		int axis = ((corn2.v[0] - corn1.v[0]) == 0 ? 0 : 1) +
+				   ((corn2.v[1] - corn1.v[1]) == 0 ? 0 : 2) +
+				   ((corn2.v[2] - corn1.v[2]) == 0 ? 0 : 4);
 		
 		switch(axis)
 		{
-		case 1: return 0; //on x-axis
-		case 2: return 1; //on y-axis
-		case 4: return 2; //on z-axis
+		case 1: 
+			return 0; //on x-axis
+		case 2: 
+			return 1; //on y-axis
+		case 4: 
+			return 2; //on z-axis
 		default: return -1;
 		}
 	}	
+	
+	
+	private float[] TransformVertex(FloatBuffer matrix, FloatBuffer vectors, int i) {
+		return new float[] {
+				vectors.get(i) * matrix.get(0) + vectors.get(i + 1) * matrix.get(1) + vectors.get(i + 2) * matrix.get(2) + matrix.get(3),  
+				vectors.get(i) * matrix.get(4) + vectors.get(i + 1) * matrix.get(5) + vectors.get(i + 2) * matrix.get(6) + matrix.get(7),
+				vectors.get(i) * matrix.get(8) + vectors.get(i + 1) * matrix.get(9) + vectors.get(i + 2) * matrix.get(10) + matrix.get(11)};
+	}
 	
 	
 	
@@ -79,9 +91,9 @@ public class Panel {
 		
 		switch (proxy.getObjectType()) {
 		 // ULMA
-		case "Ulma_frame_with_PV":
+		case "Ulma frame_with_PV":
 			hasPV = true;
-		case "Ulma_frame":
+		case "Ulma frame_d":
 			type = PanelType.ULMA;
 			thickness = PanelThickness + (hasPV ? PVThickness : 0);
 			offset = UlmaOffset;
@@ -90,14 +102,14 @@ public class Panel {
 		// STAM	
 		case "Stam_frame_with_PV":
 			hasPV = true;
-		case "Stam_frame":
+		case "Stam_frame_no_PV":
 			type = PanelType.STAM;
 			thickness = PanelThickness + (hasPV ? PVThickness : 0);  
 			offset = StamOffset;
 			break;
 			
 		// SolarWall	
-		case "SolarWall_frame":
+		case "Solarwall_frame":
 			type = PanelType.SOLARWALL;
 			thickness = PanelThickness + (hasPV ? PVThickness : 0);  
 			offset = SolarWallOffset;
@@ -125,14 +137,20 @@ public class Panel {
 		
 		GeometryInfo gInfo = proxy.getGeometry();
 		if (gInfo != null) {
+			float[] minf = new float[3];
+			float[] maxf = new float[3];
 			min  = new Coordinate(gInfo.getMinBounds().getX(), 
 					   			  gInfo.getMinBounds().getY(),
 					   			  gInfo.getMinBounds().getZ());
 			max  = new Coordinate(gInfo.getMaxBounds().getX(), 
 					   			  gInfo.getMaxBounds().getY(),
 					   			  gInfo.getMaxBounds().getZ());
-			int dxyz[] = {max.v[0] - min.v[0], max.v[1] - min.v[1], max.v[2] - min.v[2]};
 			
+			int dxyz[] = {max.v[0] - min.v[0], max.v[1] - min.v[1], max.v[2] - min.v[2]};
+			ByteBuffer transformationBytes = ByteBuffer.wrap(gInfo.getTransformation());
+			transformationBytes.order(ByteOrder.LITTLE_ENDIAN);
+			FloatBuffer transformation = transformationBytes.asFloatBuffer();
+
 			// Eurocat elements only occur on walls and have no offset (the area of the boundingbox is also the covered area)
 			if (type == PanelType.EURECAT)
 			{
@@ -147,9 +165,10 @@ public class Panel {
 					size = new PanelSize(dxyz[0],dxyz[2]);
 				}
 				return;
-			}
-			
+			}		
+					
 			GeometryData gData = gInfo.getData();
+			
 			if (gData != null)
 			{
 				ByteBuffer indicesBytes = ByteBuffer.wrap(gData.getIndices());
@@ -158,8 +177,29 @@ public class Panel {
 
 				ByteBuffer verticesBytes = ByteBuffer.wrap(gData.getVertices());
 				verticesBytes.order(ByteOrder.LITTLE_ENDIAN);
-				FloatBuffer vertices = verticesBytes.asFloatBuffer();	
-						
+				FloatBuffer vertices = verticesBytes.asFloatBuffer();
+				float[] verticesArray = new float[vertices.limit()];
+								
+				for (int i = 0; i < vertices.limit(); i += 3) {
+					float[] vert = TransformVertex(transformation, vertices, i);
+
+					//temporarily calculate the bounding box due to flaw in original boundingbox
+					for (int n = 0; n < 3; n++) {
+						verticesArray[i + n] = vert[n];
+						if (i == 0 || vert[n] < minf[n])
+							minf[n] = vert[n];
+						if (i == 0 || vert[n] > maxf[n])
+							maxf[n] = vert[n];
+					}
+				}
+				
+				//temporarily calculate the bounding box due to flaw in original boundingbox
+				min = new Coordinate(minf);
+				max = new Coordinate(maxf);
+				dxyz[0] = max.v[0] - min.v[0];
+				dxyz[1] = max.v[1] - min.v[1];
+				dxyz[2] = max.v[2] - min.v[2];
+				
 				Coordinate[] corn = new Coordinate[3]; 
 			    Coordinate begin = null;
 			    Coordinate end = null;
@@ -171,26 +211,27 @@ public class Panel {
 			    //  insulation layer (fixed thickness of 4 or 5 cm). This size does not occur elsewhere. The normal
 			    //  will always point in the direction of the edge defining the thickness. The remaining 2 edges of 
 			    //  the triangle will be the side way or upwards direction. The sideway edge will have a width
-			    //  equal to the width of the whole system minus 2 half widths of an aluskit vertical profile (8 cm).			    
-				for (int i = 0; i < indices.limit() && normalAxis == -1; i += 3) {
+			    //  equal to the width of the whole system minus 2 half widths of an aluskit vertical profile (8 cm).					    
+				for (int i = 0; i < indices.limit() && normalAxis == -1 ; i += 3) {
 					// Get the indices
 					int i1 = indices.get(i);
 					int i2 = indices.get(i + 1);
 					int i3 = indices.get(i + 2);
 					
-					// create the new corners of the by indices defined triangle
-					corn[0] = new Coordinate(vertices.get(i1 * 3), vertices.get((i1 * 3) + 1), vertices.get((i1 * 3) + 2));
-					corn[1] = new Coordinate(vertices.get(i2 * 3), vertices.get((i2 * 3) + 1), vertices.get((i2 * 3) + 2));
-					corn[2] = new Coordinate(vertices.get(i3 * 3), vertices.get((i3 * 3) + 1), vertices.get((i3 * 3) + 2));
+					// create the new corners of the by indices defined triangle after transforming the point					
+					corn[0] = new Coordinate(TransformVertex(transformation, vertices, i1 * 3));
+					corn[1] = new Coordinate(TransformVertex(transformation, vertices, i2 * 3));
+					corn[2] = new Coordinate(TransformVertex(transformation, vertices, i3 * 3));
 
 					// loop through the edges of the triangle
 					for (int n = 0; n < 3; n++) {
 						// find the axis alignment of the edge (-1 = not aligned;  0 = x-axis;  1 = y-axis;  2 = z-axis)  
-						int normalAxis = AxisId(corn[n], corn[(n+1)%3]);
+						int normalAx = AxisId(corn[n], corn[(n+1)%3]);
 						
 						// only check axis aligned edges for a length matching the InsulationThickness = normal direction 
-						if (normalAxis != -1 && getLength(corn[n], corn[(n+1)%3], normalAxis) == InsulationThickness)
+						if (normalAx != -1 && getLength(corn[n], corn[(n+1)%3], normalAx) == InsulationThickness)
 						{
+							normalAxis = normalAx;
 							// normal goes from min to max => true
 							positiveNormal = corn[n].v[normalAxis] == min.v[normalAxis] || corn[(n+1)%3].v[normalAxis] == min.v[normalAxis];						
 

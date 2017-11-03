@@ -55,7 +55,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		List<IfcBuildingElementProxy> allWithSubTypes = model.getAllWithSubTypes(IfcBuildingElementProxy.class);
 		for (IfcBuildingElementProxy ifcProxy : allWithSubTypes) {
 			//determine if the proxy is a panel (contains "initial" and "family" in the type string) or not
-			if (!ifcProxy.getObjectType().contains("Initial") || !ifcProxy.getObjectType().contains("family"))
+			if (!ifcProxy.getObjectType().contains("frame"))
 				continue; // no panel so continue to the next proxy 
 						
 			//create a listing of the panels based on each corner => a list contains neighbouring panel

@@ -2,6 +2,12 @@ package org.bimserver.demoplugins.bresaer;
 
 public class Coordinate {
 	public int[] v = new int[3]; 
+
+	public Coordinate(float[] vector) {
+		v[0] = (int)Math.round(vector[0] * 100.0); // in 0.01 mm 
+		v[1] = (int)Math.round(vector[1] * 100.0); // in 0.01 mm
+		v[2] = (int)Math.round(vector[2] * 100.0); // in 0.01 mm
+	}
 	
 	public Coordinate(double _x, double _y, double _z) {
 		v[0] = (int)Math.round(_x * 100.0); // in 0.01 mm 
