@@ -70,7 +70,7 @@ public class SpaceAreaService extends BimBotAbstractService {
 	}
 
 	@Override
-	public SchemaName getOutputSchema() {
-		return SchemaName.CSV_TABLE_1_0;
+	public String getOutputSchema() {
+		return SchemaName.CSV_TABLE_1_0.name();
 	}
 }

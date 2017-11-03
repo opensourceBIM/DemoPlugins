@@ -419,8 +419,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 	
 
 	@Override
-	public SchemaName getOutputSchema() {
-		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0;
+	public String getOutputSchema() {
+		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0.name();
 	}
 }
-
