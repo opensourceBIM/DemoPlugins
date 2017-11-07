@@ -26,9 +26,6 @@ public class BimBotBresaerService extends BimBotAbstractService {
 
 	private HashMap<Plane, HashMap<Coordinate, List<Panel>>> panelsByPlaneAndPosition  = new HashMap<Plane, HashMap<Coordinate, List<Panel>>>();
 	private HashMap<Plane, HashSet<Panel>>     panelsByPlane  = new HashMap<Plane, HashSet<Panel>>();
-//	private HashMap<Plane, List<Panel>>[] panelsAt = new HashMap[3];
-	private List<Panel>                        EurecatPanels;
-	private EnumMap<Panel.PanelType, HashMap<PanelSize, Integer>> nrOfPanelsByTypeAndSize;
 	private HashMap<PanelSize, Integer> nrOfUlmaPanels = new HashMap<PanelSize, Integer>();		
 	private HashMap<PanelSize, Integer> nrOfStamPanels = new HashMap<PanelSize, Integer>();
 	private HashMap<PanelSize, Integer> nrOfSolarPanels = new HashMap<PanelSize, Integer>();	
@@ -404,6 +401,15 @@ public class BimBotBresaerService extends BimBotAbstractService {
 	
 	@Override
 	public BimBotsOutput runBimBot(BimBotsInput input, SObjectType settings) throws BimBotsException {
+		
+		panelsByPlaneAndPosition.clear();
+		panelsByPlane.clear();
+		nrOfUlmaPanels.clear();		
+		nrOfStamPanels.clear();
+		nrOfSolarPanels.clear();	
+		nrOfEurecatPanels.clear();	
+		nrOfUnknownPanels.clear();	
+		
 		IfcModelInterface model = input.getIfcModel();
 		
 		GetPanelsFromBIM(model);
@@ -419,7 +425,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 	
 
 	@Override
-	public String getOutputSchema() {
-		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0.name();
+	public SchemaName getOutputSchema() {
+		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0;
 	}
 }

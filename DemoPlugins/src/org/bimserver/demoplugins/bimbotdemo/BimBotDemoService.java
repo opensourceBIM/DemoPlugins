@@ -41,7 +41,7 @@ public class BimBotDemoService extends BimBotAbstractService {
 	}
 
 	@Override
-	public String getOutputSchema() {
-		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0.name();
+	public SchemaName getOutputSchema() {
+		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0;
 	}
 }

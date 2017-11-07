@@ -11,11 +11,12 @@ import org.bimserver.demoplugins.bresaer.Plane;
 import org.bimserver.models.geometry.GeometryData;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcBuildingElementProxy;
+import org.bimserver.utils.GeometryUtils;
 import org.bimserver.utils.math.Vector;
 
 public class Panel {
 	//All sizes are in 1/100 mm 
-	private static final int[] UlmaOffset = { 4000, 4000, 4650, 2350}; //L, R, T, B
+	private static final int[] UlmaOffset = { 4000, 4000, 4650, 2350}; //L, R, T, B  // L => 9059
 	private static final int[] StamOffset = { 4000, 4000, 8230, 2100}; //L, R, T, B
 	private static final int[] SolarWallOffset = { 4000, 4000, 5200, 5200}; //L, R, T, B
 	private static final int[] EurecatOffset = { 13500, 13500, 40200, 10000}; //L, R, T, B
@@ -76,14 +77,14 @@ public class Panel {
 	}	
 	
 	
-	private float[] TransformVertex(FloatBuffer matrix, FloatBuffer vectors, int i) {
-		return new float[] {
-				vectors.get(i) * matrix.get(0) + vectors.get(i + 1) * matrix.get(1) + vectors.get(i + 2) * matrix.get(2) + matrix.get(3),  
-				vectors.get(i) * matrix.get(4) + vectors.get(i + 1) * matrix.get(5) + vectors.get(i + 2) * matrix.get(6) + matrix.get(7),
-				vectors.get(i) * matrix.get(8) + vectors.get(i + 1) * matrix.get(9) + vectors.get(i + 2) * matrix.get(10) + matrix.get(11)};
+	private float[] TransformVertex(double[] matrix, float[] vectors, int i) {	
+		float[] tmp = {
+						(float)(vectors[i] * matrix[0] + vectors[i + 1] * matrix[1] + vectors[i + 2] * matrix[2]  + matrix[3]),
+						(float)(vectors[i] * matrix[4] + vectors[i + 1] * matrix[5] + vectors[i + 2] * matrix[6]  + matrix[7]),
+						(float)(vectors[i] * matrix[8] + vectors[i + 1] * matrix[9] + vectors[i + 2] * matrix[10] + matrix[11])};
+		return tmp;
 	}
-	
-	
+		
 	
 	public Panel(IfcBuildingElementProxy proxy) {
 		
@@ -146,10 +147,8 @@ public class Panel {
 					   			  gInfo.getMaxBounds().getY(),
 					   			  gInfo.getMaxBounds().getZ());
 			
-			int dxyz[] = {max.v[0] - min.v[0], max.v[1] - min.v[1], max.v[2] - min.v[2]};
-			ByteBuffer transformationBytes = ByteBuffer.wrap(gInfo.getTransformation());
-			transformationBytes.order(ByteOrder.LITTLE_ENDIAN);
-			FloatBuffer transformation = transformationBytes.asFloatBuffer();
+			int dxyz[] = {max.v[0] - min.v[0], max.v[1] - min.v[1], max.v[2] - min.v[2]};		
+			double[] transformation = GeometryUtils.toDoubleArray(gInfo.getTransformation());
 
 			// Eurocat elements only occur on walls and have no offset (the area of the boundingbox is also the covered area)
 			if (type == PanelType.EURECAT)
@@ -171,21 +170,23 @@ public class Panel {
 			
 			if (gData != null)
 			{
-				ByteBuffer indicesBytes = ByteBuffer.wrap(gData.getIndices());
-				indicesBytes.order(ByteOrder.LITTLE_ENDIAN);
-				IntBuffer indices = indicesBytes.asIntBuffer();
+				int[] indices = GeometryUtils.toIntegerArray(gData.getIndices());
+//				ByteBuffer indicesBytes = ByteBuffer.wrap(gData.getIndices());
+//				indicesBytes.order(ByteOrder.LITTLE_ENDIAN);
+//				IntBuffer indices = indicesBytes.asIntBuffer();
 
-				ByteBuffer verticesBytes = ByteBuffer.wrap(gData.getVertices());
-				verticesBytes.order(ByteOrder.LITTLE_ENDIAN);
-				FloatBuffer vertices = verticesBytes.asFloatBuffer();
-				float[] verticesArray = new float[vertices.limit()];
+				float[] vertices = GeometryUtils.toFloatArray(gData.getVertices());
+//				ByteBuffer verticesBytes = ByteBuffer.wrap(gData.getVertices());
+//				verticesBytes.order(ByteOrder.LITTLE_ENDIAN);
+//				FloatBuffer vertices = verticesBytes.asFloatBuffer();
+//				float[] verticesArray = new float[vertices.limit()];
 								
-				for (int i = 0; i < vertices.limit(); i += 3) {
+				for (int i = 0; i < vertices.length; i += 3) {
 					float[] vert = TransformVertex(transformation, vertices, i);
-
+					
 					//temporarily calculate the bounding box due to flaw in original boundingbox
 					for (int n = 0; n < 3; n++) {
-						verticesArray[i + n] = vert[n];
+						vertices[i + n] = vert[n];
 						if (i == 0 || vert[n] < minf[n])
 							minf[n] = vert[n];
 						if (i == 0 || vert[n] > maxf[n])
@@ -212,16 +213,16 @@ public class Panel {
 			    //  will always point in the direction of the edge defining the thickness. The remaining 2 edges of 
 			    //  the triangle will be the side way or upwards direction. The sideway edge will have a width
 			    //  equal to the width of the whole system minus 2 half widths of an aluskit vertical profile (8 cm).					    
-				for (int i = 0; i < indices.limit() && normalAxis == -1 ; i += 3) {
+				for (int i = 0; i < indices.length && normalAxis == -1 ; i += 3) {
 					// Get the indices
-					int i1 = indices.get(i);
-					int i2 = indices.get(i + 1);
-					int i3 = indices.get(i + 2);
+					int i1 = indices[i] * 3;
+					int i2 = indices[i + 1] * 3;
+					int i3 = indices[i + 2] * 3;
 					
 					// create the new corners of the by indices defined triangle after transforming the point					
-					corn[0] = new Coordinate(TransformVertex(transformation, vertices, i1 * 3));
-					corn[1] = new Coordinate(TransformVertex(transformation, vertices, i2 * 3));
-					corn[2] = new Coordinate(TransformVertex(transformation, vertices, i3 * 3));
+					corn[0] = new Coordinate(vertices[i1], vertices[i1 + 1], vertices[i1 + 2]);
+					corn[1] = new Coordinate(vertices[i2], vertices[i2 + 1], vertices[i2 + 2]);
+					corn[2] = new Coordinate(vertices[i3], vertices[i3 + 1], vertices[i3 + 2]);
 
 					// loop through the edges of the triangle
 					for (int n = 0; n < 3; n++) {
@@ -244,14 +245,13 @@ public class Panel {
 								if (triAxis != -1) {
 									// if the length of this edges is equal to the total width - 8000 (2 half aluskit-profiles)
 									// this axis is pointing from one aluskit vertical profile to another (up is the remaining direction)
-									if (getLength(corn[(n + j) % 3], corn[(n+2)%3], triAxis) == dxyz[triAxis] - 8000) { 
+									if (getLength(corn[(n + j) % 3], corn[(n+2)%3], triAxis) == dxyz[triAxis]  - offset[0] - offset[1]) { 
 										upAxis = 3  - normalAxis - triAxis;
-										size = new PanelSize(dxyz[triAxis] - offset[0] - offset[1], dxyz[3  - normalAxis - triAxis] - offset[2] - offset[3]);
 									}
 									else {
 										upAxis = triAxis;
-										size = new PanelSize(dxyz[3  - normalAxis - triAxis] - offset[0] - offset[1], dxyz[triAxis] - offset[2] - offset[3]);
 									}
+									size = new PanelSize(dxyz[widthAxis()] - offset[0] - offset[1], dxyz[upAxis] - offset[2] - offset[3]);
 									break;
 								}
 							}
@@ -260,10 +260,10 @@ public class Panel {
 					}
 				}
 				
-				min.v[upAxis] += offset[0];
-				max.v[upAxis] -= offset[1];
-				min.v[widthAxis()] += offset[3];
-				max.v[widthAxis()] -= offset[2];
+				min.v[upAxis] += offset[3];
+				max.v[upAxis] -= offset[2];
+				min.v[widthAxis()] += offset[0];
+				max.v[widthAxis()] -= offset[1];
 			}
 		}		
 	}
