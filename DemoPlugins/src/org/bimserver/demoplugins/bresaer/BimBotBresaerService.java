@@ -370,7 +370,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 				sb.append(" *" + entry.getKey().width * 0.01 + " x " + entry.getKey().height * 0.01 + ":\t" + entry.getValue() + "\n");
 				totalUlmaSurface += entry.getKey().width * 0.00001 * entry.getKey().height * 0.00001 * entry.getValue();
 			}
-			totalCost += totalUlmaSurface * 106;
+			totalCost += totalUlmaSurface * 180;
 			sb.append("Total surface Ulma panels:\t" + String.format("%.2f", totalUlmaSurface) + "\n");
 			sb.append("Nr of UlmaConnectors:\t" + nrOfUlmaConnectors + "\n");		
 			sb.append("Nr of L70s:\t" + nrOfL70s + "\n");
@@ -378,7 +378,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 			sb.append("Nr of Ulma Horizontal rails (per length):\n");
 			for (Entry<Integer, Integer> rail : nrOfUlmaHorizRail.entrySet())
 				sb.append("  * " + rail.getKey() * 0.01 + ":\t" + rail.getValue() + "\n");
-			sb.append("Ulma part cost:" + String.format("%.2f", totalUlmaSurface * 106)  + "\n");		
+			sb.append("Ulma part cost:" + String.format("%.2f", totalUlmaSurface * 180)  + "\n");		
 			sb.append("\n");
 		}
 		
@@ -391,13 +391,13 @@ public class BimBotBresaerService extends BimBotAbstractService {
 				sb.append("  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n");
 				totalStamSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
 			}
-			totalCost += totalStamSurface * 408;
+			totalCost += totalStamSurface * 226;
 			sb.append("Total surface Stam panels:\t" + String.format("%.2f", totalStamSurface) +  "\n");
 			sb.append("Nr of StamAnchers (per length):\n");
 			for (Entry<Integer, Integer> anchor : nrOfStamAnchors.entrySet())
 				sb.append("  * " + anchor.getKey() + ":\t" + anchor.getValue() + "\n");
 			sb.append("Nr of L90s:\t" + nrOfL90s + "\n");
-			sb.append("Stam part cost:" + String.format("%.2f", totalStamSurface * 408)  + "\n");		
+			sb.append("Stam part cost:" + String.format("%.2f", totalStamSurface * 226)  + "\n");		
 			sb.append("\n");
 		}
 		
@@ -410,12 +410,12 @@ public class BimBotBresaerService extends BimBotAbstractService {
 				sb.append("  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n");
 				totalSolarSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
 			}
-			totalCost += totalSolarSurface * 72; //TODO unclear what cost value to use
+			totalCost += totalSolarSurface * 351; //TODO unclear what cost value to use
 			sb.append("Total surface Solarwall panels:\t" + String.format("%.2f", totalSolarSurface) +  "\n");
 			sb.append("Nr of Omega profiles (per length):\n");
 			for (Entry<Integer, Integer> omega : nrOfOmegaProfiles.entrySet())
 				sb.append("  * " + omega.getKey() * 0.01 + ":\t" + omega.getValue() + "\n");
-			sb.append("Solarwall part cost:" + String.format("%.2f", totalSolarSurface * 72)  + "\n"); //TODO unclear what cost value to use 		
+			sb.append("Solarwall part cost:" + String.format("%.2f", totalSolarSurface * 351)  + "\n"); 		
 			sb.append("\n");
 		}
 		
@@ -428,9 +428,9 @@ public class BimBotBresaerService extends BimBotAbstractService {
 				sb.append("  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n");
 				totalEurecatSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
 			}
-			totalCost += totalEurecatSurface * 250; //TODO unclear what cost value to use
+			totalCost += totalEurecatSurface * 446; //TODO unclear what cost value to use
 			sb.append("Total surface Eurecat panels:\t" + String.format("%.2f", totalSolarSurface) +  "\n");
-			sb.append("Eurecat part cost:" + String.format("%.2f", totalSolarSurface * 250)  + "\n"); //TODO unclear what cost value to use 		
+			sb.append("Eurecat part cost:" + String.format("%.2f", totalSolarSurface * 446)  + "\n"); 		
 			sb.append("\n");
 		}
 		

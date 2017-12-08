@@ -8,7 +8,7 @@ import org.bimserver.utils.GeometryUtils;
 
 public class Panel {
 	//All sizes are in 1/100 mm 
-	private static final int[] UlmaOffset = { 59, 13000, 4650, 2350}; //L, R, T, B 
+	private static final int[] UlmaOffset = { 4000, 4000, 4650, 2350}; //L, R, T, B 
 	private static final int[] StamOffset = { 4000, 4000, 7430, 2100}; //L, R, T, B
 	private static final int[] SolarWallOffset = { 4000, 4000, 5200, 5200}; //L, R, T, B
 	private static final int[] EurecatOffset = { 13500, 13500, 40200, 10000}; //L, R, T, B
