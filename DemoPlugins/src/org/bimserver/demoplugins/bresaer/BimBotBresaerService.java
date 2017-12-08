@@ -26,12 +26,13 @@ public class BimBotBresaerService extends BimBotAbstractService {
 
 	private HashMap<Plane, HashMap<Coordinate, List<Panel>>> panelsByPlaneAndPosition  = new HashMap<Plane, HashMap<Coordinate, List<Panel>>>();
 	private HashMap<Plane, HashSet<Panel>>     panelsByPlane  = new HashMap<Plane, HashSet<Panel>>();
+	private HashSet<Panel>                     eurecatPanels  = new HashSet<Panel>();
 	private HashMap<PanelSize, Integer> nrOfUlmaPanels = new HashMap<PanelSize, Integer>();		
 	private HashMap<PanelSize, Integer> nrOfStamPanels = new HashMap<PanelSize, Integer>();
 	private HashMap<PanelSize, Integer> nrOfSolarPanels = new HashMap<PanelSize, Integer>();	
 	private HashMap<PanelSize, Integer> nrOfEurecatPanels = new HashMap<PanelSize, Integer>();	
 	private HashMap<PanelSize, Integer> nrOfUnknownPanels = new HashMap<PanelSize, Integer>();	
-	
+	private StringBuilder strbld = new StringBuilder();
 	
 	
 	private void AddPanelToList(HashMap<Coordinate, List<Panel>> panelsAtPos, Coordinate coor, Panel panel) {			
@@ -48,11 +49,13 @@ public class BimBotBresaerService extends BimBotAbstractService {
 	
 	private void GetPanelsFromBIM(IfcModelInterface model)	{
 			
+		int row = 0;
+		strbld.setLength(0);
 		// Panels are stored as IfcBuildingElementProxy, so get all of them and loop through them for analysing each panel
 		List<IfcBuildingElementProxy> allWithSubTypes = model.getAllWithSubTypes(IfcBuildingElementProxy.class);
 		for (IfcBuildingElementProxy ifcProxy : allWithSubTypes) {
 			//determine if the proxy is a panel (contains "initial" and "family" in the type string) or not
-			if (!ifcProxy.getObjectType().contains("frame"))
+			if (!ifcProxy.getObjectType().contains("frame") && !ifcProxy.getObjectType().contains("blind"))
 				continue; // no panel so continue to the next proxy 
 						
 			//create a listing of the panels based on each corner => a list contains neighbouring panel
@@ -74,8 +77,16 @@ public class BimBotBresaerService extends BimBotAbstractService {
 				nrOfUnknownPanels.put(curPanel.size, nrOfUlmaPanels.containsKey(curPanel.size) ? nrOfUlmaPanels.get(curPanel.size) + 1 : 1);
 			}			
 			
-			if (curPanel.type == PanelType.EURECAT) 
+			if (curPanel.type == PanelType.EURECAT) {
+				eurecatPanels.add(curPanel);
 				continue;
+			}
+			
+			strbld.append(row + "\t" + curPanel.type.name() + "\t" + curPanel.normalAxis + "\t" + (curPanel.positiveNormal ? "T\t" : "F\t"));
+			strbld.append(curPanel.min.v[0] + "\t" + curPanel.min.v[1] + "\t" + curPanel.min.v[2] + "\t");
+			strbld.append(curPanel.max.v[0] + "\t" + curPanel.max.v[1] + "\t" + curPanel.max.v[2] + "\t");
+			strbld.append((curPanel.max.v[0] - curPanel.min.v[0]) + " x " + (curPanel.max.v[1] - curPanel.min.v[1]) + " x " + (curPanel.max.v[2] - curPanel.min.v[2]) + "\n");
+			row++;
 			
 			Coordinate[] coor = new Coordinate[2];
 			coor[0] = new Coordinate(curPanel.positiveNormal ? curPanel.min : curPanel.max);
@@ -135,6 +146,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 						   			  gInfo.getMaxBounds().getY(),
 						   			  gInfo.getMaxBounds().getZ());
 
+				// find panels covering the opening
 				// find the matching plane by checking each plane
 				for (HashSet<Panel> panels : panelsByPlane.values()) {
 					
@@ -149,8 +161,8 @@ public class BimBotBresaerService extends BimBotAbstractService {
 						for (Panel panel : panels) {
 							if (panel.min.v[panel.widthAxis()] < max.v[panel.widthAxis()] && 
 							    panel.max.v[panel.widthAxis()] > min.v[panel.widthAxis()] &&
-								panel.min.v[panel.upAxis] >= max.v[panel.upAxis] &&
-								panel.max.v[panel.upAxis] <= min.v[panel.upAxis]) {
+								panel.min.v[panel.upAxis] < max.v[panel.upAxis] &&
+								panel.max.v[panel.upAxis] > min.v[panel.upAxis]) {
 								panel.coversOpening = true;
 							}
 						}
@@ -158,11 +170,29 @@ public class BimBotBresaerService extends BimBotAbstractService {
 					}
 				}
 				
+				//find eurecat panels covering part of the opening
+				for (Panel panel : eurecatPanels) { 
+					if (panel.min.v[panel.normalAxis] < max.v[panel.normalAxis] &&
+					    panel.max.v[panel.normalAxis] > min.v[panel.normalAxis] &&
+						panel.min.v[panel.widthAxis()] < max.v[panel.widthAxis()] && 
+						panel.max.v[panel.widthAxis()] > min.v[panel.widthAxis()] &&
+						panel.min.v[panel.upAxis] < max.v[panel.upAxis] &&
+						panel.max.v[panel.upAxis] > min.v[panel.upAxis] &&
+						(panel.min.v[panel.widthAxis()] + panel.offset[0] > min.v[panel.widthAxis()] || 
+						 panel.max.v[panel.widthAxis()] - panel.offset[1] < max.v[panel.widthAxis()] ||
+						 panel.min.v[panel.upAxis] + panel.offset[3] > min.v[panel.upAxis] ||
+						 panel.max.v[panel.upAxis] - panel.offset[2] < max.v[panel.upAxis])) {
+						panel.coversOpening = true;
+					}									
+				}
 			}
 		}
 	}	
 	
-	private String WriteParts() {
+	
+	
+	
+	private String WritePartsAndIssues() {
 		
 		//count elements
 		//generic parts
@@ -193,9 +223,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		double totalSolarSurface = 0.0;
 		
 		//eurecat panel parts
-		double totalEurecatSurface = 0.0;		
-	
-		String output = "";		
+		double totalEurecatSurface = 0.0;			
 		
 		// count nr of Aluskit vertical profiles with length X
 		for (HashMap<Coordinate, List<Panel>> panelsAt : panelsByPlaneAndPosition.values()) {		
@@ -318,84 +346,131 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		// eurecat panel numbers	
 		// get the connectors for ulma one per coordinate used by ulma panels
 		
-	
+		StringBuilder sb = new StringBuilder(); 
 		//Write the output to file
-		output += "MaterialListing:\n";
-		output += "Nr of AlusKitProfile vertical (per length):\n";
+		sb.append("MaterialListing:\n");
+		sb.append("Generic components\n");
+		sb.append("-------------------------------------------\n");
+		sb.append("Nr of AlusKitProfile vertical (per length):\n");
 		for (Entry<Integer, Integer> entry : nrOfVertAluskitProfile.entrySet())
-			output += "  * " + entry.getKey() * 0.01 + ":\t" + entry.getValue() + "\n";
-		output += "Nr of Fixed Brackets:\t" + nrOfFixedBracket + "\n";
-		output += "Nr of Slide Brackets:\t" + nrOfSlideBracket + "\n";
-		output += "Nr of M80 Hamerbolds:\t" + nrOfM8HammerBolts + "\n";
-		output += "Nr of Nuts:\t" + nrOfNuts + "\n";
-		output += "Nr of Washers:\t" + nrOfWashers + "\n";
-		output += "\n";
+			sb.append("  * " + entry.getKey() * 0.01 + ":\t" + entry.getValue() + "\n");
+		sb.append("Nr of Fixed Brackets:\t" + nrOfFixedBracket + "\n");
+		sb.append("Nr of Slide Brackets:\t" + nrOfSlideBracket + "\n");
+		sb.append("Nr of M80 Hamerbolds:\t" + nrOfM8HammerBolts + "\n");
+		sb.append("Nr of Nuts:\t" + nrOfNuts + "\n");
+		sb.append("Nr of Washers:\t" + nrOfWashers + "\n");
+		sb.append("\n");
 		
+		if (!nrOfUlmaPanels.isEmpty()) {
 		//ulma parts
-		output += "Nr of Ulma panels (per width x height):\n";
-		for (Entry<PanelSize, Integer> entry : nrOfUlmaPanels.entrySet()) {
-			output += " *" + entry.getKey().width * 0.01 + " x " + entry.getKey().height * 0.01 + ":\t" + entry.getValue() + "\n";
-			totalUlmaSurface += entry.getKey().width * 0.00001 * entry.getKey().height * 0.00001 * entry.getValue();
+			sb.append("Ulma elements\n");
+			sb.append("-------------------------------------------\n");
+			sb.append("Nr of Ulma panels (per width x height):\n");
+			for (Entry<PanelSize, Integer> entry : nrOfUlmaPanels.entrySet()) {
+				sb.append(" *" + entry.getKey().width * 0.01 + " x " + entry.getKey().height * 0.01 + ":\t" + entry.getValue() + "\n");
+				totalUlmaSurface += entry.getKey().width * 0.00001 * entry.getKey().height * 0.00001 * entry.getValue();
+			}
+			totalCost += totalUlmaSurface * 106;
+			sb.append("Total surface Ulma panels:\t" + String.format("%.2f", totalUlmaSurface) + "\n");
+			sb.append("Nr of UlmaConnectors:\t" + nrOfUlmaConnectors + "\n");		
+			sb.append("Nr of L70s:\t" + nrOfL70s + "\n");
+			sb.append("Nr of Bars:\t" + nrOfBars + "\n");
+			sb.append("Nr of Ulma Horizontal rails (per length):\n");
+			for (Entry<Integer, Integer> rail : nrOfUlmaHorizRail.entrySet())
+				sb.append("  * " + rail.getKey() * 0.01 + ":\t" + rail.getValue() + "\n");
+			sb.append("Ulma part cost:" + String.format("%.2f", totalUlmaSurface * 106)  + "\n");		
+			sb.append("\n");
 		}
-		totalCost += totalUlmaSurface * 106;
-		output += "Total surface Ulma panels:\t" + String.format("%.2f", totalUlmaSurface) + "\n";
-		output += "Nr of UlmaConnectors:\t" + nrOfUlmaConnectors + "\n";		
-		output += "Nr of L70s:\t" + nrOfL70s + "\n";
-		output += "Nr of Bars:\t" + nrOfBars + "\n";
-		output += "Nr of Ulma Horizontal rails (per length):\n";
-		for (Entry<Integer, Integer> rail : nrOfUlmaHorizRail.entrySet())
-			output += "  * " + rail.getKey() * 0.01 + ":\t" + rail.getValue() + "\n";
-		output += "Ulma part cost:" + String.format("%.2f", totalUlmaSurface * 106)  + "\n";		
-		output += "\n";
 		
 		//Stam parts
-		output += "Nr of Stam panels (per width x height):\n";
-		for (Entry<PanelSize, Integer> panel : nrOfStamPanels.entrySet()) {
-			output += "  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n";
-			totalStamSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
+		if (!nrOfStamPanels.isEmpty()) {
+			sb.append("Stam elements\n");
+			sb.append("-------------------------------------------\n");		
+			sb.append("Nr of Stam panels (per width x height):\n");
+			for (Entry<PanelSize, Integer> panel : nrOfStamPanels.entrySet()) {
+				sb.append("  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n");
+				totalStamSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
+			}
+			totalCost += totalStamSurface * 408;
+			sb.append("Total surface Stam panels:\t" + String.format("%.2f", totalStamSurface) +  "\n");
+			sb.append("Nr of StamAnchers (per length):\n");
+			for (Entry<Integer, Integer> anchor : nrOfStamAnchors.entrySet())
+				sb.append("  * " + anchor.getKey() + ":\t" + anchor.getValue() + "\n");
+			sb.append("Nr of L90s:\t" + nrOfL90s + "\n");
+			sb.append("Stam part cost:" + String.format("%.2f", totalStamSurface * 408)  + "\n");		
+			sb.append("\n");
 		}
-		totalCost += totalStamSurface * 408;
-		output += "Total surface Stam panels:\t" + String.format("%.2f", totalStamSurface) +  "\n";
-		output += "Nr of StamAnchers (per length):\n";
-		for (Entry<Integer, Integer> anchor : nrOfStamAnchors.entrySet())
-			output += "  * " + anchor.getKey() + ":\t" + anchor.getValue() + "\n";
-		output += "Nr of L90s:\t" + nrOfL90s + "\n";
-		output += "Stam part cost:" + String.format("%.2f", totalStamSurface * 408)  + "\n";		
-		output += "\n";
-
+		
 		//Solarwall parts
-		output += "Nr of Solarwall panels (per width x height):\n";
-		for (Entry<PanelSize, Integer> panel : nrOfSolarPanels.entrySet()) {
-			output += "  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n";
-			totalSolarSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
+		if (!nrOfStamPanels.isEmpty()) {
+			sb.append("Solarwall elements\n");
+			sb.append("-------------------------------------------\n");		
+			sb.append("Nr of Solarwall panels (per width x height):\n");
+			for (Entry<PanelSize, Integer> panel : nrOfSolarPanels.entrySet()) {
+				sb.append("  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n");
+				totalSolarSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
+			}
+			totalCost += totalSolarSurface * 72; //TODO unclear what cost value to use
+			sb.append("Total surface Solarwall panels:\t" + String.format("%.2f", totalSolarSurface) +  "\n");
+			sb.append("Nr of Omega profiles (per length):\n");
+			for (Entry<Integer, Integer> omega : nrOfOmegaProfiles.entrySet())
+				sb.append("  * " + omega.getKey() * 0.01 + ":\t" + omega.getValue() + "\n");
+			sb.append("Solarwall part cost:" + String.format("%.2f", totalSolarSurface * 72)  + "\n"); //TODO unclear what cost value to use 		
+			sb.append("\n");
 		}
-		totalCost += totalSolarSurface * 72; //TODO unclear what cost value to use
-		output += "Total surface Solarwall panels:\t" + String.format("%.2f", totalSolarSurface) +  "\n";
-		output += "Nr of Omega profiles (per length):\n";
-		for (Entry<Integer, Integer> omega : nrOfOmegaProfiles.entrySet())
-			output += "  * " + omega.getKey() * 0.01 + ":\t" + omega.getValue() + "\n";
-		output += "Solarwall part cost:" + String.format("%.2f", totalSolarSurface * 72)  + "\n"; //TODO unclear what cost value to use 		
-
+		
 		//Eurecat parts
-		output += "Nr of Eurecat panels (per width x height):\n";
-		for (Entry<PanelSize, Integer> panel : nrOfSolarPanels.entrySet()) {
-			output += "  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n";
-			totalEurecatSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
+		if (!nrOfEurecatPanels.isEmpty()) {
+			sb.append("Eurecat elements\n");
+			sb.append("-------------------------------------------\n");		
+			sb.append("Nr of Eurecat panels (per width x height):\n");
+			for (Entry<PanelSize, Integer> panel : nrOfSolarPanels.entrySet()) {
+				sb.append("  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n");
+				totalEurecatSurface += panel.getKey().width * 0.00001 * panel.getKey().height * 0.00001 * panel.getValue();
+			}
+			totalCost += totalEurecatSurface * 250; //TODO unclear what cost value to use
+			sb.append("Total surface Eurecat panels:\t" + String.format("%.2f", totalSolarSurface) +  "\n");
+			sb.append("Eurecat part cost:" + String.format("%.2f", totalSolarSurface * 250)  + "\n"); //TODO unclear what cost value to use 		
+			sb.append("\n");
 		}
-		totalCost += totalEurecatSurface * 250; //TODO unclear what cost value to use
-		output += "Total surface Eurecat panels:\t" + String.format("%.2f", totalSolarSurface) +  "\n";
-		output += "Eurecat part cost:" + String.format("%.2f", totalSolarSurface * 250)  + "\n"; //TODO unclear what cost value to use 		
-
-		output += "\n";
-		output += "Total cost: " + String.format("%.2f", totalCost);
+		
+		sb.append("-------------------------------------------\n");		
+		sb.append("Total cost: " + String.format("%.2f", totalCost) + "\n");
+		sb.append("-------------------------------------------\n");		
+		sb.append("\n");
 		
 		//Unknown panels
-		output += "Nr of unknown panels (per width x height):\n";
-		for (Entry<PanelSize, Integer> panel : nrOfUnknownPanels.entrySet()) {
-			output += "  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n";
+		if (!nrOfUnknownPanels.isEmpty()) {
+			sb.append("Unknown panels\n");
+			sb.append("-------------------------------------------\n");		
+			sb.append("Nr of unknown panels (per width x height):\n");
+			for (Entry<PanelSize, Integer> panel : nrOfUnknownPanels.entrySet()) {
+				sb.append("  * " + panel.getKey().width * 0.01 + " x " + panel.getKey().height * 0.01 + ":\t" + panel.getValue() + "\n");
+			}
+			sb.append("\n");
 		}
 		
-		return output;		
+		sb.append("Panels (partly) covering an opening\n");
+		sb.append("-------------------------------------------\n");
+		//loop through all panelsets for the different planes
+		for (HashSet<Panel> panels : panelsByPlane.values()) {
+			for (Panel panel : panels) {
+				if (panel.coversOpening)
+					sb.append(panel.id + " " + panel.type.name() + "\n");
+			}
+		}	
+		
+		for (Panel panel : eurecatPanels) {
+			if (panel.coversOpening)
+				sb.append(panel.id + " " + panel.type.name() + "\n");
+		}
+		
+//		sb.append("Panel details\n");
+//		sb.append("-------------------------------------------\n");
+//		sb.append(strbld.toString());
+		
+		
+		return sb.toString();		
 	}
 
 	
@@ -404,6 +479,7 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		
 		panelsByPlaneAndPosition.clear();
 		panelsByPlane.clear();
+		eurecatPanels.clear();
 		nrOfUlmaPanels.clear();		
 		nrOfStamPanels.clear();
 		nrOfSolarPanels.clear();	
@@ -413,10 +489,10 @@ public class BimBotBresaerService extends BimBotAbstractService {
 		IfcModelInterface model = input.getIfcModel();
 		
 		GetPanelsFromBIM(model);
-		String outputString = WriteParts();
-		
 		GetIntersections(model);
-
+				
+		String outputString = WritePartsAndIssues();
+	
 		BimBotsOutput output = new BimBotsOutput(SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0, outputString.getBytes(Charsets.UTF_8));
 		output.setTitle("Materials used for Bresaer envelope");
 		output.setContentType("text/plain");		

@@ -1,23 +1,15 @@
 package org.bimserver.demoplugins.bresaer;
 
-import java.io.Console;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.HashMap;
 
-import org.bimserver.demoplugins.bresaer.Plane;
 import org.bimserver.models.geometry.GeometryData;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcBuildingElementProxy;
 import org.bimserver.utils.GeometryUtils;
-import org.bimserver.utils.math.Vector;
 
 public class Panel {
 	//All sizes are in 1/100 mm 
-	private static final int[] UlmaOffset = { 4000, 4000, 4650, 2350}; //L, R, T, B  // L => 9059
-	private static final int[] StamOffset = { 4000, 4000, 8230, 2100}; //L, R, T, B
+	private static final int[] UlmaOffset = { 59, 13000, 4650, 2350}; //L, R, T, B 
+	private static final int[] StamOffset = { 4000, 4000, 7430, 2100}; //L, R, T, B
 	private static final int[] SolarWallOffset = { 4000, 4000, 5200, 5200}; //L, R, T, B
 	private static final int[] EurecatOffset = { 13500, 13500, 40200, 10000}; //L, R, T, B
 	private static final int InsulationThickness = 4000;
@@ -38,6 +30,8 @@ public class Panel {
 		}
 	
 	public Coordinate min, max;
+	public double[]   mind, maxd;
+	public double[]   transformation;
 	public PanelType  type;
 	public PanelSize  size;
 	public boolean    hasPV = false;
@@ -48,6 +42,7 @@ public class Panel {
 	public int        upAxis;
 	public String 	  id;
 	public boolean    coversOpening;
+	public int[]      offset;
 	
 
 	public int widthAxis() {
@@ -79,17 +74,15 @@ public class Panel {
 	
 	private float[] TransformVertex(double[] matrix, float[] vectors, int i) {	
 		float[] tmp = {
-						(float)(vectors[i] * matrix[0] + vectors[i + 1] * matrix[1] + vectors[i + 2] * matrix[2]  + matrix[3]),
-						(float)(vectors[i] * matrix[4] + vectors[i + 1] * matrix[5] + vectors[i + 2] * matrix[6]  + matrix[7]),
-						(float)(vectors[i] * matrix[8] + vectors[i + 1] * matrix[9] + vectors[i + 2] * matrix[10] + matrix[11])};
+						(float)(vectors[i] * matrix[0] + vectors[i + 1] * matrix[4] + vectors[i + 2] * matrix[8]  + matrix[12]),
+						(float)(vectors[i] * matrix[1] + vectors[i + 1] * matrix[5] + vectors[i + 2] * matrix[9]  + matrix[13]),
+						(float)(vectors[i] * matrix[2] + vectors[i + 1] * matrix[6] + vectors[i + 2] * matrix[10] + matrix[14])};
 		return tmp;
 	}
 		
 	
 	public Panel(IfcBuildingElementProxy proxy) {
-		
-		int[] offset;
-		
+			
 		switch (proxy.getObjectType()) {
 		 // ULMA
 		case "Ulma frame_with_PV":
@@ -134,27 +127,29 @@ public class Panel {
 		id = proxy.getGlobalId();
 		coversOpening = false;
 		normalAxis = -1;
-		upAxis = -1;		
+		upAxis = -1;	
 		
 		GeometryInfo gInfo = proxy.getGeometry();
 		if (gInfo != null) {
-			float[] minf = new float[3];
-			float[] maxf = new float[3];
-			min  = new Coordinate(gInfo.getMinBounds().getX(), 
-					   			  gInfo.getMinBounds().getY(),
-					   			  gInfo.getMinBounds().getZ());
-			max  = new Coordinate(gInfo.getMaxBounds().getX(), 
-					   			  gInfo.getMaxBounds().getY(),
-					   			  gInfo.getMaxBounds().getZ());
+			mind = new double[3];
+			maxd = new double[3];
 			
-			int dxyz[] = {max.v[0] - min.v[0], max.v[1] - min.v[1], max.v[2] - min.v[2]};		
-			double[] transformation = GeometryUtils.toDoubleArray(gInfo.getTransformation());
-
+			mind[0] = gInfo.getMinBounds().getX(); 
+			mind[1] = gInfo.getMinBounds().getY();
+			mind[2] = gInfo.getMinBounds().getZ();
+			maxd[0] = gInfo.getMaxBounds().getX(); 
+			maxd[1] = gInfo.getMaxBounds().getY();
+			maxd[2] = gInfo.getMaxBounds().getZ();
+			
+			min  = new Coordinate(mind[0], mind[1], mind[2]);
+			max  = new Coordinate(maxd[0], maxd[1], maxd[2]);
+			
+			Coordinate dxyzc = new Coordinate(maxd[0] - mind[0], maxd[1] - mind[1], maxd[2] - mind[2]);
+			int dxyz[] = {dxyzc.v[0],dxyzc.v[1],dxyzc.v[2]};
+			
 			// Eurocat elements only occur on walls and have no offset (the area of the boundingbox is also the covered area)
-			if (type == PanelType.EURECAT)
-			{
-				upAxis = 2; //z is up
-				
+			if (type == PanelType.EURECAT) {
+				upAxis = 2; //z is up				
 				if (dxyz[0] == EurecatThickness) {
 					normalAxis = 0;
 					size = new PanelSize(dxyz[1], dxyz[2]);
@@ -166,53 +161,30 @@ public class Panel {
 				return;
 			}		
 					
-			GeometryData gData = gInfo.getData();
-			
-			if (gData != null)
-			{
+			transformation = GeometryUtils.toDoubleArray(gInfo.getTransformation());
+			GeometryData gData = gInfo.getData();			
+			if (gData != null) {
 				int[] indices = GeometryUtils.toIntegerArray(gData.getIndices());
-//				ByteBuffer indicesBytes = ByteBuffer.wrap(gData.getIndices());
-//				indicesBytes.order(ByteOrder.LITTLE_ENDIAN);
-//				IntBuffer indices = indicesBytes.asIntBuffer();
-
 				float[] vertices = GeometryUtils.toFloatArray(gData.getVertices());
-//				ByteBuffer verticesBytes = ByteBuffer.wrap(gData.getVertices());
-//				verticesBytes.order(ByteOrder.LITTLE_ENDIAN);
-//				FloatBuffer vertices = verticesBytes.asFloatBuffer();
-//				float[] verticesArray = new float[vertices.limit()];
-								
-				for (int i = 0; i < vertices.length; i += 3) {
-					float[] vert = TransformVertex(transformation, vertices, i);
 					
-					//temporarily calculate the bounding box due to flaw in original boundingbox
+				//transform all vertices neccessary to make sure the axis directions correspond to the whole and not just the element
+				for (int i = 0; i < vertices.length; i += 3) {
+					float[] vert = TransformVertex(transformation, vertices, i);				
 					for (int n = 0; n < 3; n++) {
 						vertices[i + n] = vert[n];
-						if (i == 0 || vert[n] < minf[n])
-							minf[n] = vert[n];
-						if (i == 0 || vert[n] > maxf[n])
-							maxf[n] = vert[n];
 					}
-				}
-				
-				//temporarily calculate the bounding box due to flaw in original boundingbox
-				min = new Coordinate(minf);
-				max = new Coordinate(maxf);
-				dxyz[0] = max.v[0] - min.v[0];
-				dxyz[1] = max.v[1] - min.v[1];
-				dxyz[2] = max.v[2] - min.v[2];
+				}			
 				
 				Coordinate[] corn = new Coordinate[3]; 
-			    Coordinate begin = null;
-			    Coordinate end = null;
-							
 				// Find the normal pointing out of the surface and the direction of the 
 			    // aluskit vertical profiles (normally up).
 			    // -The implemented method only works for axis aligned panels (assumed to be always the case)
 			    // -This allows a simplified method which searches for a triangle matching one of the sides of the
-			    //  insulation layer (fixed thickness of 4 or 5 cm). This size does not occur elsewhere. The normal
-			    //  will always point in the direction of the edge defining the thickness. The remaining 2 edges of 
-			    //  the triangle will be the side way or upwards direction. The sideway edge will have a width
-			    //  equal to the width of the whole system minus 2 half widths of an aluskit vertical profile (8 cm).					    
+			    //  insulation layer (fixed thickness of 4 cm in current family could be 5 cm in future). This size 
+				//  does not occur elsewhere. The normal will always point in the direction of the edge defining
+				//  the thickness. The remaining 2 edges of the triangle will be the side way or upwards direction. 
+				//  The sideway edge will have a width equal to the width of the whole system minus 2 half widths
+				//  of an aluskit vertical profile (= 8 cm).					    
 				for (int i = 0; i < indices.length && normalAxis == -1 ; i += 3) {
 					// Get the indices
 					int i1 = indices[i] * 3;
@@ -230,8 +202,7 @@ public class Panel {
 						int normalAx = AxisId(corn[n], corn[(n+1)%3]);
 						
 						// only check axis aligned edges for a length matching the InsulationThickness = normal direction 
-						if (normalAx != -1 && getLength(corn[n], corn[(n+1)%3], normalAx) == InsulationThickness)
-						{
+						if (normalAx != -1 && getLength(corn[n], corn[(n+1)%3], normalAx) == InsulationThickness) {
 							normalAxis = normalAx;
 							// normal goes from min to max => true
 							positiveNormal = corn[n].v[normalAxis] == min.v[normalAxis] || corn[(n+1)%3].v[normalAxis] == min.v[normalAxis];						
@@ -243,12 +214,16 @@ public class Panel {
 								
 								// only check axis aligned edges
 								if (triAxis != -1) {
-									// if the length of this edges is equal to the total width - 8000 (2 half aluskit-profiles)
+									// if the length of this edges is equal to the total width - offsets on both sides (often 2 half aluskit-profiles)
 									// this axis is pointing from one aluskit vertical profile to another (up is the remaining direction)
 									if (getLength(corn[(n + j) % 3], corn[(n+2)%3], triAxis) == dxyz[triAxis]  - offset[0] - offset[1]) { 
 										upAxis = 3  - normalAxis - triAxis;
 									}
-									else {
+/*									else if (Math.abs(getLength(corn[(n + j) % 3], corn[(n+2)%3], triAxis) - (dxyz[triAxis]  - offset[0] - offset[1])) <= 1) {
+										upAxis = 3  - normalAxis - triAxis;
+										roundingError = true;
+									}
+*/									else {
 										upAxis = triAxis;
 									}
 									size = new PanelSize(dxyz[widthAxis()] - offset[0] - offset[1], dxyz[upAxis] - offset[2] - offset[3]);
@@ -405,6 +380,5 @@ public class Panel {
 
 
 	*/
-	
 	
 }
