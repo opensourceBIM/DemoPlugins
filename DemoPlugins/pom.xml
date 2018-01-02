@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opensourcebim</groupId>
 	<artifactId>demoplugins</artifactId>
-	<version>0.0.25-SNAPSHOT</version>
+	<version>0.0.24-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<timestamp>${maven.build.timestamp}</timestamp>
@@ -160,7 +160,7 @@
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
 			<artifactId>shared</artifactId>
-			<version>1.5.89</version>
+			<version>1.5.93</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensourcebim</groupId>
