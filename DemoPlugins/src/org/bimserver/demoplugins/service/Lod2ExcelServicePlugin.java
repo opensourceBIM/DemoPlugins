@@ -141,8 +141,8 @@ public class Lod2ExcelServicePlugin extends AbstractAddExtendedDataService {
 		
 		for (IfcSpace ifcSpace : model.getAll(IfcSpace.class)) {
 			if (ifcSpace.getGeometry() != null) {
-				Vector3f minBounds = ifcSpace.getGeometry().getMinBounds();
-				Vector3f maxBounds = ifcSpace.getGeometry().getMinBounds();
+				Vector3f minBounds = ifcSpace.getGeometry().getBounds().getMin();
+				Vector3f maxBounds = ifcSpace.getGeometry().getBounds().getMax();
 				
 				double v = cubicScaleFactor * (maxBounds.getX() - minBounds.getX() * (maxBounds.getY() - minBounds.getY()) * (maxBounds.getZ() - minBounds.getZ()));
 				totalSpaceM3 += v;
@@ -152,7 +152,7 @@ public class Lod2ExcelServicePlugin extends AbstractAddExtendedDataService {
 		
 		for (IfcProduct ifcProduct : model.getAllWithSubTypes(IfcProduct.class)) {
 			if (ifcProduct.getGeometry() != null) {
-				totalBounds.integrate(new Bounds(ifcProduct.getGeometry().getMinBounds(), ifcProduct.getGeometry().getMaxBounds()));
+				totalBounds.integrate(new Bounds(ifcProduct.getGeometry().getBounds().getMin(), ifcProduct.getGeometry().getBounds().getMax()));
 				
 				totalNrTriangles += ifcProduct.getGeometry().getPrimitiveCount();
 				if (!(ifcProduct instanceof IfcFurnishingElement)) {

@@ -77,7 +77,7 @@ public class PathChecker {
 		spaceCheckResult.setIfcSpace(ifcSpace);
 		GeometryInfo geometry = ifcSpace.getGeometry();
 		if (geometry != null) {
-			double height = geometry.getMaxBounds().getZ() - geometry.getMinBounds().getZ();
+			double height = geometry.getBounds().getMax().getZ() - geometry.getBounds().getMin().getZ();
 
 			spaceCheckResult.setWidthMustBe(settings.getMinWidth());
 			spaceCheckResult.setHeightMustBe(settings.getMinHeadRoomMM());

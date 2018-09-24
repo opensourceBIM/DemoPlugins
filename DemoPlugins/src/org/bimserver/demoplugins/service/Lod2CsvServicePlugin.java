@@ -135,8 +135,8 @@ public class Lod2CsvServicePlugin extends AbstractAddExtendedDataService {
 		
 		for (IfcSpace ifcSpace : model.getAll(IfcSpace.class)) {
 			if (ifcSpace.getGeometry() != null) {
-				Vector3f minBounds = ifcSpace.getGeometry().getMinBounds();
-				Vector3f maxBounds = ifcSpace.getGeometry().getMinBounds();
+				Vector3f minBounds = ifcSpace.getGeometry().getBounds().getMin();
+				Vector3f maxBounds = ifcSpace.getGeometry().getBounds().getMax();
 				
 				double v = cubicScaleFactor * (maxBounds.getX() - minBounds.getX() * (maxBounds.getY() - minBounds.getY()) * (maxBounds.getZ() - minBounds.getZ()));
 				totalSpaceM3 += v;
@@ -147,7 +147,7 @@ public class Lod2CsvServicePlugin extends AbstractAddExtendedDataService {
 		for (IfcProduct ifcProduct : model.getAllWithSubTypes(IfcProduct.class)) {
 			GeometryInfo geometry = ifcProduct.getGeometry();
 			if (geometry != null) {
-				totalBounds.integrate(new Bounds(geometry.getMinBounds(), geometry.getMaxBounds()));
+				totalBounds.integrate(new Bounds(geometry.getBounds().getMin(), geometry.getBounds().getMax()));
 				
 				totalNrTriangles += geometry.getPrimitiveCount();
 				if (!(ifcProduct instanceof IfcFurnishingElement)) {

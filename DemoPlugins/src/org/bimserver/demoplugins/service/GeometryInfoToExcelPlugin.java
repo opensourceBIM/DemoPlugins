@@ -83,10 +83,10 @@ public class GeometryInfoToExcelPlugin extends AbstractAddExtendedDataService  {
 		for (IfcProduct ifcProduct : model.getAllWithSubTypes(IfcProduct.class)) {
 			if (ifcProduct.getGeometry() != null) {
 				int nrTriangles = ifcProduct.getGeometry().getPrimitiveCount();
-				int nrIndices = ifcProduct.getGeometry().getData().getIndices().length / 4;
-				int nrVertices = ifcProduct.getGeometry().getData().getVertices().length / 4;
-				int nrNormals = ifcProduct.getGeometry().getData().getNormals().length / 4;
-				int nrColors = ifcProduct.getGeometry().getData().getMaterials().length / 4;
+				int nrIndices = ifcProduct.getGeometry().getData().getNrIndices();
+				int nrVertices = ifcProduct.getGeometry().getData().getNrVertices();
+				int nrNormals = ifcProduct.getGeometry().getData().getNrNormals();
+				int nrColors = ifcProduct.getGeometry().getData().getNrColors();
 
 				TriangleIterator triangleIterator = new TriangleIterator(ifcProduct.getGeometry().getData());
 				float totalArea =  0;

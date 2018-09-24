@@ -312,18 +312,18 @@ public class RcCalculationServicePlugin extends AbstractAddExtendedDataService {
 		if (gInfo != null) {
 			GeometryData gData = gInfo.getData();				
 			if (gData != null) {
-				ByteBuffer materialsBuffer = ByteBuffer.wrap(gData.getMaterials());
+				ByteBuffer materialsBuffer = ByteBuffer.wrap(gData.getColorsQuantized().getData());
 				materialsBuffer.order(ByteOrder.LITTLE_ENDIAN);
 				FloatBuffer color = materialsBuffer.asFloatBuffer();
 				
 				if (color == null || color.limit() == 0)
 					return;
 				
-				ByteBuffer indicesBuffer = ByteBuffer.wrap(gData.getIndices());
+				ByteBuffer indicesBuffer = ByteBuffer.wrap(gData.getIndices().getData());
 				indicesBuffer.order(ByteOrder.LITTLE_ENDIAN);
 				IntBuffer indices = indicesBuffer.asIntBuffer();
 
-				ByteBuffer verticesBuffer = ByteBuffer.wrap(gData.getVertices());
+				ByteBuffer verticesBuffer = ByteBuffer.wrap(gData.getVertices().getData());
 				verticesBuffer.order(ByteOrder.LITTLE_ENDIAN);
 				FloatBuffer vertices = verticesBuffer.asFloatBuffer();					
 

@@ -221,18 +221,18 @@ public class MasonryPlugin extends AbstractModifyRevisionService {
 		if (gInfo != null) {
 			GeometryData gData = gInfo.getData();				
 			if (gData != null) {		
-				ByteBuffer materialsBytes = ByteBuffer.wrap(gData.getMaterials());
-				materialsBytes.order(ByteOrder.LITTLE_ENDIAN);
-				FloatBuffer colors = materialsBytes.asFloatBuffer();		
+				ByteBuffer quantizedColorsBytes = ByteBuffer.wrap(gData.getColorsQuantized().getData());
+				quantizedColorsBytes.order(ByteOrder.LITTLE_ENDIAN);
+				FloatBuffer colors = quantizedColorsBytes.asFloatBuffer();		
 				
 				if (colors == null || colors.limit() == 0)
 					return null;
 				
-				ByteBuffer indicesBytes = ByteBuffer.wrap(gData.getIndices());
+				ByteBuffer indicesBytes = ByteBuffer.wrap(gData.getIndices().getData());
 				indicesBytes.order(ByteOrder.LITTLE_ENDIAN);
 				IntBuffer indices = indicesBytes.asIntBuffer();
 
-				ByteBuffer verticesBytes = ByteBuffer.wrap(gData.getVertices());
+				ByteBuffer verticesBytes = ByteBuffer.wrap(gData.getVertices().getData());
 				verticesBytes.order(ByteOrder.LITTLE_ENDIAN);
 				FloatBuffer vertices = verticesBytes.asFloatBuffer();					
 						

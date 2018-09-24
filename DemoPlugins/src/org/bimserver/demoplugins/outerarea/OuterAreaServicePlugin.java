@@ -90,11 +90,11 @@ public class OuterAreaServicePlugin extends AbstractAddExtendedDataService {
 						map.get(ifcProduct.eClass().getName()).incrementAndGet();
 						nrUsedProducts++;
 						
-						ByteBuffer indicesBuffer = ByteBuffer.wrap(geometryData.getIndices());
+						ByteBuffer indicesBuffer = ByteBuffer.wrap(geometryData.getIndices().getData());
 						indicesBuffer.order(ByteOrder.LITTLE_ENDIAN);
 						IntBuffer indices = indicesBuffer.asIntBuffer();
 
-						ByteBuffer verticesBuffer = ByteBuffer.wrap(geometryData.getVertices());
+						ByteBuffer verticesBuffer = ByteBuffer.wrap(geometryData.getVertices().getData());
 						verticesBuffer.order(ByteOrder.LITTLE_ENDIAN);
 						FloatBuffer vertices = verticesBuffer.asFloatBuffer();
 

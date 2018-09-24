@@ -34,17 +34,17 @@ public class TriangleIterator {
 	public TriangleIterator(GeometryData data) {
 		this.data = data;
 
-		ByteBuffer indicesBuffer = ByteBuffer.wrap(data.getIndices());
+		ByteBuffer indicesBuffer = ByteBuffer.wrap(data.getIndices().getData());
 		indicesBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		indicesIntBuffer = indicesBuffer.asIntBuffer();
 		
-		ByteBuffer verticesBuffer = ByteBuffer.wrap(data.getVertices());
+		ByteBuffer verticesBuffer = ByteBuffer.wrap(data.getVertices().getData());
 		verticesBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		verticesFloatBuffer = verticesBuffer.asFloatBuffer();
 	}
 
 	public boolean hasNext() {
-		return currentTriangle < this.data.getIndices().length / 12;
+		return currentTriangle < this.data.getNrIndices();
 	}
 
 	public Triangle next() {
