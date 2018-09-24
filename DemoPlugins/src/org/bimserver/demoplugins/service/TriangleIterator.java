@@ -44,7 +44,7 @@ public class TriangleIterator {
 	}
 
 	public boolean hasNext() {
-		return currentTriangle < this.data.getNrIndices();
+		return currentTriangle < this.data.getNrIndices() / 3;
 	}
 
 	public Triangle next() {

@@ -23,6 +23,7 @@ import java.util.Locale;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.interfaces.objects.SProject;
+import org.bimserver.models.geometry.GeometryData;
 import org.bimserver.models.ifc2x3tc1.IfcProduct;
 import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.AbstractAddExtendedDataService;
@@ -83,30 +84,33 @@ public class GeometryInfoToExcelPlugin extends AbstractAddExtendedDataService  {
 		for (IfcProduct ifcProduct : model.getAllWithSubTypes(IfcProduct.class)) {
 			if (ifcProduct.getGeometry() != null) {
 				int nrTriangles = ifcProduct.getGeometry().getPrimitiveCount();
-				int nrIndices = ifcProduct.getGeometry().getData().getNrIndices();
-				int nrVertices = ifcProduct.getGeometry().getData().getNrVertices();
-				int nrNormals = ifcProduct.getGeometry().getData().getNrNormals();
-				int nrColors = ifcProduct.getGeometry().getData().getNrColors();
-
-				TriangleIterator triangleIterator = new TriangleIterator(ifcProduct.getGeometry().getData());
-				float totalArea =  0;
-				while (triangleIterator.hasNext()) {
-					Triangle triangle = triangleIterator.next();
-					float area = triangle.area();
-					totalArea += area;
+				GeometryData data = ifcProduct.getGeometry().getData();
+				if (data != null) {
+					int nrIndices = data.getNrIndices();
+					int nrVertices = data.getNrVertices();
+					int nrNormals = data.getNrNormals();
+					int nrColors = data.getNrColors();
+					
+					TriangleIterator triangleIterator = new TriangleIterator(data);
+					float totalArea =  0;
+					while (triangleIterator.hasNext()) {
+						Triangle triangle = triangleIterator.next();
+						float area = triangle.area();
+						totalArea += area;
+					}
+					
+					sheet.addCell(new Label(0, row, ifcProduct.eClass().getName(), times));
+					sheet.addCell(new Label(1, row, ifcProduct.getGlobalId(), times));
+					sheet.addCell(new jxl.write.Number(2, row, nrTriangles, times));
+					sheet.addCell(new jxl.write.Number(3, row, nrIndices, times));
+					sheet.addCell(new jxl.write.Number(4, row, nrVertices, times));
+					sheet.addCell(new jxl.write.Number(5, row, nrNormals, times));
+					sheet.addCell(new jxl.write.Number(6, row, nrColors, times));
+					sheet.addCell(new jxl.write.Number(7, row, totalArea, times));
+					sheet.addCell(new Formula(8, row, "H" + (row + 1) + "/C" + (row + 1), times));
+					
+					row++;
 				}
-				
-				sheet.addCell(new Label(0, row, ifcProduct.eClass().getName(), times));
-				sheet.addCell(new Label(1, row, ifcProduct.getGlobalId(), times));
-				sheet.addCell(new jxl.write.Number(2, row, nrTriangles, times));
-				sheet.addCell(new jxl.write.Number(3, row, nrIndices, times));
-				sheet.addCell(new jxl.write.Number(4, row, nrVertices, times));
-				sheet.addCell(new jxl.write.Number(5, row, nrNormals, times));
-				sheet.addCell(new jxl.write.Number(6, row, nrColors, times));
-				sheet.addCell(new jxl.write.Number(7, row, totalArea, times));
-				sheet.addCell(new Formula(8, row, "H" + (row + 1) + "/C" + (row + 1), times));
-				
-				row++;
 			}
 		}
 	    
