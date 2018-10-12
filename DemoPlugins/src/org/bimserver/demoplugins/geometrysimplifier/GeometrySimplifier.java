@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.bimserver.bimbots.BimBotContext;
 import org.bimserver.bimbots.BimBotsException;
 import org.bimserver.bimbots.BimBotsInput;
 import org.bimserver.bimbots.BimBotsOutput;
@@ -54,7 +55,7 @@ import com.google.common.base.Charsets;
 public class GeometrySimplifier extends BimBotAbstractService  {
 
 	@Override
-	public BimBotsOutput runBimBot(BimBotsInput input, SObjectType settings) throws BimBotsException {
+	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, SObjectType settings) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
 
 		int nrProducts = 0;

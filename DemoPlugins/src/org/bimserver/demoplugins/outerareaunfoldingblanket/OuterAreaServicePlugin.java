@@ -448,7 +448,7 @@ public class OuterAreaServicePlugin extends AbstractAddExtendedDataService {
 		float totalSpaceM3 = 0;
 		
 		for (IfcSpace ifcSpace : model.getAll(IfcSpace.class)) {
-			Double volume = IfcUtils.getIfcQuantityVolume(ifcSpace, "Net Volume");
+			Double volume = IfcUtils.getIfcQuantityVolume(ifcSpace);
 			if (volume != null) {
 				totalSpaceM3 += volume;
 			}

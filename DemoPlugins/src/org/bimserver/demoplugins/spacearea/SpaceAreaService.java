@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import org.bimserver.bimbots.BimBotContext;
 import org.bimserver.bimbots.BimBotsException;
 import org.bimserver.bimbots.BimBotsInput;
 import org.bimserver.bimbots.BimBotsOutput;
@@ -41,7 +42,7 @@ import com.opencsv.CSVWriter;
 public class SpaceAreaService extends BimBotAbstractService {
 
 	@Override
-	public BimBotsOutput runBimBot(BimBotsInput input, SObjectType settings) throws BimBotsException {
+	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, SObjectType settings) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
 
 		StringWriter stringWriter = new StringWriter();

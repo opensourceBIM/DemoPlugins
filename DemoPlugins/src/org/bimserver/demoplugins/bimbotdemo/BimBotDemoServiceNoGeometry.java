@@ -26,13 +26,12 @@ import org.bimserver.bimbots.BimBotsOutput;
 import org.bimserver.emf.IdEObject;
 import org.bimserver.emf.IfcModelInterface;
 import org.bimserver.interfaces.objects.SObjectType;
-import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.BimBotAbstractService;
 
 import com.google.common.base.Charsets;
 
-public class BimBotDemoService extends BimBotAbstractService {
+public class BimBotDemoServiceNoGeometry extends BimBotAbstractService {
 
 	@Override
 	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, SObjectType settings) throws BimBotsException {
@@ -48,7 +47,6 @@ public class BimBotDemoService extends BimBotAbstractService {
 			e.printStackTrace();
 		}
 		
-		int totalPrimitives = 0;
 		List<IdEObject> products = model.getAllWithSubTypes(model.getPackageMetaData().getEClass("IfcProduct"));
 		bimBotContext.updateProgress("Counting products", 33);
 		sb.append("Number of products: " + products.size() + "\n");
@@ -64,15 +62,6 @@ public class BimBotDemoService extends BimBotAbstractService {
 			e.printStackTrace();
 		}
 
-		bimBotContext.updateProgress("Counting primitives", 66);
-		for (IdEObject ifcProduct : products) {
-			GeometryInfo geometry = (GeometryInfo) ifcProduct.eGet(ifcProduct.eClass().getEStructuralFeature("geometry"));
-			if (geometry != null) {
-				totalPrimitives += geometry.getPrimitiveCount();
-			}
-		}
-		
-		sb.append("Number of triangles: " + totalPrimitives + "\n");
 		sb.append("Number of IfcRoot objects (with GlobalId): " + ifcRoot + "\n");
 		sb.append("Number of objects: " + model.size() + "\n");
 		BimBotsOutput output = new BimBotsOutput(SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0, sb.toString().getBytes(Charsets.UTF_8));
@@ -88,6 +77,11 @@ public class BimBotDemoService extends BimBotAbstractService {
 		return output;
 	}
 
+	@Override
+	public boolean requiresGeometry() {
+		return false;
+	}
+	
 	@Override
 	public String getOutputSchema() {
 		return SchemaName.UNSTRUCTURED_UTF8_TEXT_1_0.name();
