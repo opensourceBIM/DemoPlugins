@@ -27,11 +27,11 @@ import org.bimserver.bimbots.BimBotsException;
 import org.bimserver.bimbots.BimBotsInput;
 import org.bimserver.bimbots.BimBotsOutput;
 import org.bimserver.emf.IfcModelInterface;
-import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcClassificationNotationSelect;
 import org.bimserver.models.ifc2x3tc1.IfcClassificationReference;
 import org.bimserver.models.ifc2x3tc1.IfcSpace;
+import org.bimserver.plugins.PluginConfiguration;
 import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.BimBotAbstractService;
 import org.bimserver.utils.IfcUtils;
@@ -42,7 +42,7 @@ import com.opencsv.CSVWriter;
 public class SpaceAreaService extends BimBotAbstractService {
 
 	@Override
-	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, SObjectType settings) throws BimBotsException {
+	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, PluginConfiguration pluginConfiguration) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
 
 		StringWriter stringWriter = new StringWriter();

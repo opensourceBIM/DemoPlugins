@@ -25,7 +25,7 @@ import org.bimserver.bimbots.BimBotsInput;
 import org.bimserver.bimbots.BimBotsOutput;
 import org.bimserver.emf.IdEObject;
 import org.bimserver.emf.IfcModelInterface;
-import org.bimserver.interfaces.objects.SObjectType;
+import org.bimserver.plugins.PluginConfiguration;
 import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.BimBotAbstractService;
 
@@ -34,7 +34,7 @@ import com.google.common.base.Charsets;
 public class BimBotDemoServiceNoGeometry extends BimBotAbstractService {
 
 	@Override
-	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, SObjectType settings) throws BimBotsException {
+	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, PluginConfiguration pluginConfiguration) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
 
 		bimBotContext.updateProgress("Counting objects", 0);

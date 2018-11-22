@@ -28,7 +28,6 @@ import org.bimserver.bimbots.BimBotsException;
 import org.bimserver.bimbots.BimBotsInput;
 import org.bimserver.bimbots.BimBotsOutput;
 import org.bimserver.emf.IfcModelInterface;
-import org.bimserver.interfaces.objects.SObjectType;
 import org.bimserver.models.geometry.GeometryData;
 import org.bimserver.models.geometry.GeometryInfo;
 import org.bimserver.models.ifc2x3tc1.IfcCartesianPoint;
@@ -46,6 +45,7 @@ import org.bimserver.models.ifc2x3tc1.IfcRepresentationItem;
 import org.bimserver.models.ifc2x3tc1.IfcRepresentationMap;
 import org.bimserver.models.ifc2x3tc1.IfcShell;
 import org.bimserver.models.ifc2x3tc1.IfcShellBasedSurfaceModel;
+import org.bimserver.plugins.PluginConfiguration;
 import org.bimserver.plugins.SchemaName;
 import org.bimserver.plugins.services.BimBotAbstractService;
 import org.eclipse.emf.common.util.EList;
@@ -55,7 +55,7 @@ import com.google.common.base.Charsets;
 public class GeometrySimplifier extends BimBotAbstractService  {
 
 	@Override
-	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, SObjectType settings) throws BimBotsException {
+	public BimBotsOutput runBimBot(BimBotsInput input, BimBotContext bimBotContext, PluginConfiguration pluginConfiguration) throws BimBotsException {
 		IfcModelInterface model = input.getIfcModel();
 
 		int nrProducts = 0;
