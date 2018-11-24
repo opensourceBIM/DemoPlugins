@@ -99,11 +99,11 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 		Deserializer deserializer = deserializerPlugin.createDeserializer(null);
 		deserializer.init(model.getPackageMetaData());
 		Path pickNickTableFile = getPluginContext().getRootPath().resolve("data").resolve("picknicktable.ifc");
-		InputStream resourceAsInputStream = Files.newInputStream(pickNickTableFile);
-		
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		IOUtils.copy(resourceAsInputStream, byteArrayOutputStream);
-		resourceAsInputStream.close();
+		try (InputStream resourceAsInputStream = Files.newInputStream(pickNickTableFile)) {
+			IOUtils.copy(resourceAsInputStream, byteArrayOutputStream);
+		}
+		
 		IfcModelInterface furnishingModel = DeserializerUtils.readFromBytes(deserializer, byteArrayOutputStream.toByteArray(), "picknicktable.ifc");
 
 		float lengthUnitPrefix = IfcUtils.getLengthUnitPrefix(model);
