@@ -132,7 +132,7 @@ public class CloneService extends ServicePlugin {
 					SProject localProject = projectsByName.get(0);
 					
 					SDeserializerPluginConfiguration localDeserializer = localClient.getServiceInterface().getDeserializerByName("IfcStepDeserializer");
-					localClient.getServiceInterface().checkin(localProject.getOid(), "Blaat", localDeserializer.getOid(), (long) outputStream.size(), "filename.ifc", new DataHandler(new InputStreamDataSource(new ByteArrayInputStream(outputStream.toByteArray()))), true, true);
+					localClient.getServiceInterface().checkinSync(localProject.getOid(), "Blaat", localDeserializer.getOid(), (long) outputStream.size(), "filename.ifc", new DataHandler(new InputStreamDataSource(new ByteArrayInputStream(outputStream.toByteArray()))), true);
 				} catch (PublicInterfaceNotFoundException e) {
 					LOGGER.error("", e);
 				} catch (ServiceException e) {

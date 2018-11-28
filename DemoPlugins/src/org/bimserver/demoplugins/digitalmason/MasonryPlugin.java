@@ -575,7 +575,7 @@ public class MasonryPlugin extends AbstractModifyRevisionService {
 			SDeserializerPluginConfiguration deserializerForExtension = bimServerClientInterface.getServiceInterface().getSuggestedDeserializerForExtension("ifc", project.getOid());
 			System.out.println("Checking in " + f.toString() + " - " + Formatters.bytesToString(f.length()));
 			try {
-				bimServerClientInterface.checkin(project.getOid(), "", deserializerForExtension.getOid(), false, Flow.SYNC, resultPath);
+				bimServerClientInterface.checkinSync(project.getOid(), "", deserializerForExtension.getOid(), false, resultPath);
 			} catch (UserException e) {
 				e.printStackTrace();
 			}		
