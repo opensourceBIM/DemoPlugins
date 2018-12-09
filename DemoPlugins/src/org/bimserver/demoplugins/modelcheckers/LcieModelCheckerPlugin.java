@@ -27,11 +27,16 @@ import org.bimserver.shared.exceptions.PluginException;
 public class LcieModelCheckerPlugin implements ModelCheckerPlugin {
 
 	@Override
-	public void init(PluginContext pluginContext) throws PluginException {
+	public void init(PluginContext pluginContext, PluginConfiguration systemSettings) throws PluginException {
 	}
 
 	@Override
-	public ObjectDefinition getSettingsDefinition() {
+	public ObjectDefinition getUserSettingsDefinition() {
+		return null;
+	}
+	
+	@Override
+	public ObjectDefinition getSystemSettingsDefinition() {
 		return null;
 	}
 

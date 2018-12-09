@@ -81,7 +81,7 @@ public abstract class AbstractPlanningConsultService extends AbstractAddExtended
 	}
 
 	@Override
-	public ObjectDefinition getSettingsDefinition() {
+	public ObjectDefinition getUserSettingsDefinition() {
 		ObjectDefinition objectDefinition = StoreFactory.eINSTANCE.createObjectDefinition();
 		
 		PrimitiveDefinition typeDefinition = StoreFactory.eINSTANCE.createPrimitiveDefinition();

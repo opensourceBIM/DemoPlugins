@@ -58,7 +58,7 @@ public class EventLogService extends AbstractAddExtendedDataService {
 	}
 	
 	@Override
-	public ObjectDefinition getSettingsDefinition() {
+	public ObjectDefinition getUserSettingsDefinition() {
 		ObjectDefinition settings = StoreFactory.eINSTANCE.createObjectDefinition();
 		
 		PrimitiveDefinition stringType = StoreFactory.eINSTANCE.createPrimitiveDefinition();

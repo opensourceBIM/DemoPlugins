@@ -63,12 +63,12 @@ public class CloneService extends ServicePlugin {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CloneService.class);
 
 	@Override
-	public void init(PluginContext pluginContext) throws PluginException {
-		super.init(pluginContext);
+	public void init(PluginContext pluginContext, PluginConfiguration systemSettings) throws PluginException {
+		super.init(pluginContext, systemSettings);
 	}
 
 	@Override
-	public ObjectDefinition getSettingsDefinition() {
+	public ObjectDefinition getUserSettingsDefinition() {
 		ObjectDefinition objectDefinition = StoreFactory.eINSTANCE.createObjectDefinition();
 		
 		PrimitiveDefinition stringType = StoreFactory.eINSTANCE.createPrimitiveDefinition();
