@@ -59,7 +59,6 @@ import org.bimserver.models.ifc2x3tc1.IfcSpace;
 import org.bimserver.plugins.ModelHelper;
 import org.bimserver.plugins.deserializers.Deserializer;
 import org.bimserver.plugins.deserializers.DeserializerPlugin;
-import org.bimserver.plugins.objectidms.HideAllInversesObjectIDM;
 import org.bimserver.plugins.services.AbstractModifyRevisionService;
 import org.bimserver.plugins.services.BimServerClientInterface;
 import org.bimserver.shared.GuidCompressor;
@@ -119,7 +118,7 @@ public class FurniturePlacerServicePlugin extends AbstractModifyRevisionService 
 		}
 
 		MetaDataManager metaDataManager = getPluginContext().getMetaDataManager();
-		ModelHelper modelHelper = new ModelHelper(metaDataManager, new HideAllInversesObjectIDM(CollectionUtils.singleSet(Ifc2x3tc1Package.eINSTANCE), metaDataManager.getPackageMetaData("ifc2x3tc1")), model);
+		ModelHelper modelHelper = new ModelHelper(metaDataManager, model);
 
 		modelHelper.setTargetModel(model);
 		modelHelper.setObjectFactory(model);
