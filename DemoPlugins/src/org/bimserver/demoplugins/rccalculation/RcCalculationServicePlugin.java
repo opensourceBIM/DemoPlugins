@@ -149,7 +149,7 @@ public class RcCalculationServicePlugin extends AbstractAddExtendedDataService {
 	
 	public class Material {
 		public String  name;
-		public int     styleExpressId;
+		public long     styleExpressId;
 		public Float   thickness;
 		public Float   lambda; // Thermal conductivity in W/mK
 		public Float   Cp;     // Specific heat capacity in J/kgK
