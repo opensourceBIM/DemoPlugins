@@ -64,6 +64,7 @@ public class GeometryMatcher extends AbstractAddExtendedDataService {
 
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws Exception {
+		super.newRevision(runningService, bimServerClientInterface, poid, roid, userToken, soid, settings);
 		Map<SProjectSmall, Map<AxisAlignedBoundingBox, IfcOpeningElement>> map = new HashMap<>();
 		
 		Map<Long, String> projectNames = new LinkedHashMap<>();

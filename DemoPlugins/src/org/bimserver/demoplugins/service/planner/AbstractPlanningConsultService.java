@@ -52,6 +52,7 @@ public abstract class AbstractPlanningConsultService extends AbstractAddExtended
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws ServerException, UserException, PublicInterfaceNotFoundException, BimServerClientException {
 		try {
+			super.newRevision(runningService, bimServerClientInterface, poid, roid, userToken, soid, settings);
 			SProject project = bimServerClientInterface.getServiceInterface().getProjectByPoid(poid);
 			IfcModelInterface model = bimServerClientInterface.getModel(project, roid, true, false, false);
 

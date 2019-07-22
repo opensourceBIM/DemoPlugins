@@ -50,6 +50,7 @@ public class GeometryInfoToExcelPlugin extends AbstractAddExtendedDataService  {
 
 	@Override
 	public void newRevision(RunningService runningService, BimServerClientInterface bimServerClientInterface, long poid, long roid, String userToken, long soid, SObjectType settings) throws Exception {
+		super.newRevision(runningService, bimServerClientInterface, poid, roid, userToken, soid, settings);
 	    WorkbookSettings wbSettings = new WorkbookSettings();
 		
 	    wbSettings.setLocale(new Locale("en", "EN"));
