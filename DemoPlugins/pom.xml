@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opensourcebim</groupId>
   <artifactId>demoplugins</artifactId>
-  <version>0.0.66-SNAPSHOT</version>
+  <version>0.0.66</version>
   <name>DemoPlugins</name>
   <description>BIMserver plugins for demo purposes</description>
   <url>https://github.com/opensourceBIM/DemoPlugins</url>
@@ -28,7 +27,7 @@
   <scm>
     <connection>scm:git:https://github.com/opensourceBIM/DemoPlugins.git</connection>
     <developerConnection>scm:git:https://github.com/opensourceBIM/DemoPlugins.git</developerConnection>
-    <tag>demoplugins-0.0.22</tag>
+    <tag>demoplugins-0.0.66</tag>
     <url>https://github.com/opensourceBIM/DemoPlugins.git</url>
   </scm>
   <issueManagement>
