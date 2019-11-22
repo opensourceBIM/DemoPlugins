@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opensourcebim</groupId>
   <artifactId>demoplugins</artifactId>
-  <version>0.0.79</version>
+  <version>0.0.80-SNAPSHOT</version>
   <name>DemoPlugins</name>
   <description>BIMserver plugins for demo purposes</description>
   <url>https://github.com/opensourceBIM/DemoPlugins</url>
@@ -27,7 +27,7 @@
   <scm>
     <connection>scm:git:https://github.com/opensourceBIM/DemoPlugins.git</connection>
     <developerConnection>scm:git:https://github.com/opensourceBIM/DemoPlugins.git</developerConnection>
-    <tag>demoplugins-0.0.79</tag>
+    <tag>demoplugins-0.0.68</tag>
     <url>https://github.com/opensourceBIM/DemoPlugins.git</url>
   </scm>
   <issueManagement>
